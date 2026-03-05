@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 101 | Pods Finance × Vista</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #111111;
+      --cream:   #E4E2D8;
+      --muted:   #9B9B9B;
+      --dim:     #555555;
+      --orange:  #FF5233;
+      --blue:    #90CAF9;
+      --green:   #B5D9A8;
+      --surface: #1a1a1a;
+      --border:  rgba(228,226,216,0.10);
+      --border2: rgba(228,226,216,0.18);
+      --font:    'Geist', system-ui, sans-serif;
+      --mono:    'Geist Mono', 'SF Mono', 'Monaco', monospace;
+    }
+
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: var(--bg);
+      color: var(--cream);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #deck { position: fixed; inset: 0; }
+
+    /* Progress bar */
+    #progress {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 2px; background: rgba(255,255,255,0.06); z-index: 300;
+    }
+    #progress-fill {
+      height: 100%; background: var(--orange);
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1); width: 3.5%;
+    }
+
+    /* Counter */
+    #counter {
+      position: fixed; bottom: 24px; right: 32px;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(180,180,180,0.65); z-index: 300; user-select: none;
+    }
+
+    /* â”€â”€â”€ SLIDE BASE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+       Left-aligned, vertically centered.
+       Padding: top/bottom generous, left 8%, right 5%
+    â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      justify-content: center;
+      padding: 56px 8%;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(12px);
+      overflow: hidden;
+    }
+    .slide.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+    /* Decorative ring, right side, partially cropped */
+    .ring {
+      position: absolute;
+      border-radius: 50%;
+      right: -14vw; top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+    /* Grid blocks decorative, three offset rectangles */
+    .blocks {
+      position: absolute; pointer-events: none;
+      right: 6vw; bottom: 8vh;
+      display: grid;
+      grid-template-columns: 32px 32px;
+      grid-template-rows: 60px 36px 40px;
+      gap: 10px;
+    }
+    .b1 { grid-column: 1; grid-row: 1; }
+    .b2 { grid-column: 2; grid-row: 2; }
+    .b3 { grid-column: 1; grid-row: 3; }
+
+    /* Section label */
+    .label {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 20px; flex-shrink: 0;
+    }
+    .label.white { color: var(--cream); }
+
+    /* Thin horizontal rule */
+    .rule {
+      width: 40px; height: 1px;
+      background: var(--orange);
+      margin-bottom: 20px;
+      flex-shrink: 0;
+    }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       COVER
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    .t-cover { justify-content: center; padding-bottom: 0; }
+    .t-cover .top-label {
+      position: absolute; top: 32px; left: 8%;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+    }
+    .t-cover h1 {
+      font-size: clamp(64px, 7.5vw, 96px);
+      font-weight: 400; letter-spacing: -0.03em; line-height: 1.0;
+      color: #ffffff; max-width: 540px;
+    }
+    .t-cover h1 .orange {
+      color: #ffffff;
+      text-decoration: none;
+    }
+    .t-cover .tagline {
+      margin-top: 12px;
+      font-size: clamp(16px, 1.875vw, 24px); font-weight: 300;
+      color: var(--muted); max-width: 420px; line-height: 1.5;
+    }
+    .t-cover .meta { display: none; }
+    /* Vista logo bottom-left */
+    .vista-logo {
+      position: absolute; bottom: 32px; left: 8%;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .vista-logo span {
+      font-family: var(--font); font-size: 15px; font-weight: 300;
+      letter-spacing: -0.01em; color: rgba(255,255,255,0.9);
+    }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       CONCEPT (headline + bullets)
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    .t-concept h2 {
+      font-size: clamp(1.8rem, 3vw, 3.2rem);
+      font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
+      color: var(--cream); max-width: 620px;
+      margin-bottom: 32px; flex-shrink: 0;
+    }
+    .t-concept h2 .orange { color: var(--orange); }
+    .t-concept h2 .muted { color: var(--muted); font-weight: 300; }
+    h2 .muted, .close-line .muted { color: var(--muted); font-weight: 300; }
+    .t-concept ul { list-style: none; max-width: 620px; display: flex; flex-direction: column; gap: 14px; }
+    .t-concept li {
+      display: flex; gap: 14px; align-items: flex-start;
+      font-size: clamp(14px, 1.4vw, 17px); line-height: 1.6;
+      color: rgba(228,226,216,0.85);
+    }
+    .t-concept li .arrow {
+      color: var(--orange); font-size: 12px; margin-top: 4px;
+      flex-shrink: 0; font-family: var(--mono);
+    }
+    .t-concept li strong { color: var(--cream); font-weight: 500; }
+    .t-concept li .dim { color: var(--muted); }
+
+    /* vocab cards */
+    .vocab-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px; max-width: 780px;
+    }
+    .v-card {
+      border: 1px solid var(--border2);
+      border-radius: 2px; padding: 22px 26px;
+      background: rgba(255,255,255,0.02);
+    }
+    .v-term {
+      font-family: var(--mono); font-size: 13px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 8px;
+    }
+    .v-def { font-size: 15px; line-height: 1.65; color: rgba(228,226,216,0.82); }
+    .v-def strong { color: var(--cream); font-weight: 500; }
+
+    /* RICE 4-column */
+    .rice-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 10px; max-width: 760px;
+    }
+    .rice-card {
+      border: 1px solid rgba(255,82,51,0.3);
+      border-radius: 2px; padding: 20px 16px;
+      background: rgba(255,82,51,0.04);
+    }
+    .rice-num {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; color: var(--orange); margin-bottom: 6px;
+    }
+    .rice-letter {
+      font-size: clamp(2rem, 3vw, 2.8rem); font-weight: 300;
+      color: var(--orange); letter-spacing: -0.02em; line-height: 1;
+      margin-bottom: 8px;
+    }
+    .rice-title {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 4px;
+    }
+    .rice-sub { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* note box */
+    .note {
+      margin-top: 24px; max-width: 540px;
+      padding: 14px 18px;
+      border-left: 2px solid var(--orange);
+      background: rgba(255,82,51,0.05);
+    }
+    .note-label {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 4px;
+    }
+    .note-body { font-size: 14px; line-height: 1.55; color: rgba(228,226,216,0.75); }
+    .note-body strong { color: var(--cream); }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       SECTION OPENER (big title, half-width)
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    .t-section-opener h2 {
+      font-size: clamp(2rem, 3.5vw, 3.5rem);
+      font-weight: 400; letter-spacing: -0.03em; line-height: 1.1;
+      color: var(--cream); max-width: 500px; margin-bottom: 20px;
+    }
+    .t-section-opener .sub {
+      font-size: 14px; color: var(--muted);
+      max-width: 420px; line-height: 1.6;
+    }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       QUOTE / DOOR
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    .t-quote {
+      justify-content: center;
+      border-left: 3px solid var(--orange);
+      padding-left: calc(8% + 28px);
+    }
+    .t-quote blockquote {
+      font-size: clamp(1.4rem, 2.2vw, 2.1rem);
+      font-weight: 300; letter-spacing: -0.02em; line-height: 1.5;
+      color: rgba(228,226,216,0.60); max-width: 680px;
+    }
+    .t-quote blockquote strong { color: var(--cream); font-weight: 400; }
+    .t-quote .next {
+      margin-top: 36px;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(255,82,51,0.75);
+    }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       TABLE
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    .t-table h2 {
+      font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+      font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
+      color: var(--cream); max-width: 560px;
+      margin-bottom: 28px; flex-shrink: 0;
+    }
+    .t-table h2 .orange { color: var(--orange); }
+    table {
+      border-collapse: collapse;
+      max-width: 760px; width: 100%;
+      font-size: 14px;
+    }
+    th {
+      text-align: left;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); padding: 9px 16px;
+      border-bottom: 1px solid var(--border2);
+    }
+    td {
+      padding: 12px 16px;
+      color: rgba(228,226,216,0.78);
+      border-bottom: 1px solid var(--border);
+      line-height: 1.45;
+    }
+    tr:last-child td { border-bottom: none; }
+    td strong { color: var(--cream); font-weight: 500; }
+    td em { font-style: normal; color: rgba(228,226,216,0.78); font-weight: 500; }
+    tr.hi td { background: transparent; }
+    tr.hi td:first-child { border-left: none; padding-left: 16px; }
+    tr.no td { color: #ff6b55; }
+    tr.no td strong { color: #ff4433; font-weight: 600; }
+    .t-caption {
+      margin-top: 14px; max-width: 700px;
+      font-family: var(--mono); font-size: 11px;
+      color: rgba(180,180,180,0.65); letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       COMPARE
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    .t-compare h2 {
+      font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+      font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
+      color: var(--cream); max-width: 560px;
+      margin-bottom: 24px; flex-shrink: 0;
+    }
+    .t-compare h2 .orange { color: var(--orange); }
+    .cmp-wrap {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2px; max-width: 820px;
+    }
+    .cmp-col {
+      padding: 26px 32px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+    .cmp-col.good { border-color: rgba(255,82,51,0.3); }
+    .cmp-label {
+      font-family: var(--mono); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .cmp-col.bad  .cmp-label { color: rgba(228,226,216,0.65); }
+    .cmp-col.good .cmp-label { color: var(--orange); }
+    .cmp-body { font-size: 15px; line-height: 1.75; color: rgba(228,226,216,0.6); }
+    .cmp-col.bad .cmp-body { font-style: italic; color: rgba(228,226,216,0.75); }
+    .cmp-col.good .cmp-body { color: rgba(228,226,216,0.85); }
+    .cmp-row { display: block; margin-top: 3px; }
+    .cmp-row strong { color: var(--orange); font-weight: 500; font-style: normal; }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       EXERCISE
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    .t-exercise h2 {
+      font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+      font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
+      color: var(--cream); max-width: 560px;
+      margin-bottom: 24px; flex-shrink: 0;
+    }
+    .t-exercise h2 .orange { color: var(--orange); }
+    .ex-card {
+      border: 1px solid rgba(255,82,51,0.25);
+      background: rgba(255,82,51,0.04);
+      padding: 24px 28px; max-width: 720px;
+    }
+    .ex-steps { display: flex; flex-direction: column; gap: 12px; }
+    .ex-step { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.5; color: rgba(228,226,216,0.82); }
+    .ex-step strong { color: var(--cream); font-weight: 500; }
+    .ex-step .hl { color: var(--orange); }
+    .sn {
+      flex-shrink: 0; width: 20px; height: 20px;
+      border: 1px solid rgba(255,82,51,0.35);
+      background: rgba(255,82,51,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      color: var(--orange); margin-top: 2px;
+    }
+    .ex-template {
+      font-family: var(--mono); font-size: 11.5px; line-height: 2.1;
+      color: rgba(228,226,216,0.55); margin-top: 12px;
+    }
+    .ex-template .var { color: var(--orange); }
+    .timer {
+      margin-top: 20px;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--orange);
+      display: flex; gap: 0; align-items: center; flex-wrap: wrap;
+    }
+    .tsep { margin: 0 8px; opacity: 0.3; }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       DEMO
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    .t-demo h2 {
+      font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+      font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
+      color: var(--cream); max-width: 560px;
+      margin-bottom: 24px; flex-shrink: 0;
+    }
+    .t-demo h2 .orange { color: var(--orange); }
+    .demo-split {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 20px; max-width: 840px;
+    }
+    .ph-box {
+      border: 1px dashed rgba(228,226,216,0.1);
+      background: rgba(255,255,255,0.015);
+      min-height: 180px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px; padding: 20px;
+    }
+    .ph-label {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--orange); opacity: 0.5;
+    }
+    .ph-desc { font-size: 12px; color: var(--muted); text-align: center; line-height: 1.5; }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       VISUAL (placeholder)
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    .t-visual h2 {
+      font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+      font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
+      color: var(--cream); max-width: 560px;
+      margin-bottom: 24px; flex-shrink: 0;
+    }
+    .t-visual h2 .orange { color: var(--orange); }
+    .ph-full {
+      border: 1px dashed rgba(228,226,216,0.1);
+      background: rgba(255,255,255,0.015);
+      max-width: 820px; width: 100%; height: 260px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px;
+    }
+    .ph-sub { font-family: var(--mono); font-size: 11px; color: rgba(180,180,180,0.65); margin-top: 4px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+    /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       RESOURCE / CLOSE
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+    .t-resource h2 {
+      font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+      font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
+      color: var(--cream); max-width: 560px;
+      margin-bottom: 28px; flex-shrink: 0;
+    }
+    .t-resource h2 .orange { color: var(--orange); }
+    .res-list { display: flex; flex-direction: column; gap: 10px; max-width: 640px; }
+    .res-row {
+      display: flex; gap: 12px; align-items: flex-start;
+      font-size: 13.5px; line-height: 1.5;
+      color: rgba(228,226,216,0.7);
+    }
+    .res-row::before { content: '→'; color: var(--orange); font-family: var(--mono); font-size: 10px; margin-top: 3px; flex-shrink: 0; }
+    .res-row strong { color: var(--cream); font-weight: 500; }
+    .close-line {
+      margin-top: 40px;
+      font-size: clamp(1.2rem, 2vw, 1.7rem); font-weight: 300;
+      letter-spacing: -0.015em; color: var(--cream); max-width: 540px;
+    }
+    .close-line .orange { color: var(--orange); }
+
+    /* Slide images */
+    .slide-img {
+      max-width: 100%; height: auto;
+      border-radius: 2px;
+      border: 1px solid var(--border2);
+    }
+    .slide-img.right-float {
+      position: absolute;
+      right: 6vw; top: 50%;
+      transform: translateY(-50%);
+      max-width: 38vw; max-height: 60vh;
+      object-fit: contain;
+      border: none;
+      opacity: 0.92;
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress"><div id="progress-fill"></div></div>
+<div id="counter">01 / 29</div>
+
+<div id="deck">
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S01 · COVER
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-cover active" id="s1">
+
+    <!-- â”€â”€ Decorative geometry â”€â”€ -->
+    <img src="deck-assets/vista-mark-light.svg"
+         style="position:absolute;height:135vh;left:20%;top:-11vh;pointer-events:none;display:block;">
+
+    <!-- â”€â”€ Content â”€â”€ -->
+    <div class="top-label">Vista × Pods Finance</div>
+
+    <h1>AI 101</h1>
+    <p class="tagline">Develop an AI Fluent mindset</p>
+
+    <div class="vista-logo">
+      <svg width="90" height="42" viewBox="0 0 513 236" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M81.7538 112.176L50.2075 197.484H36.8781L5.33177 112.176H19.5498L43.0985 180.156H43.9871L67.5357 112.176H81.7538ZM92.7983 197.484V112.176H105.906V197.484H92.7983ZM99.463 97.9577C96.9082 97.9577 94.7052 97.0876 92.8539 95.3473C91.0396 93.6071 90.1324 91.5151 90.1324 89.0714C90.1324 86.6277 91.0396 84.5357 92.8539 82.7955C94.7052 81.0552 96.9082 80.1851 99.463 80.1851C102.018 80.1851 104.202 81.0552 106.017 82.7955C107.868 84.5357 108.794 86.6277 108.794 89.0714C108.794 91.5151 107.868 93.6071 106.017 95.3473C104.202 97.0876 102.018 97.9577 99.463 97.9577ZM184.083 131.281L172.309 134.614C171.568 132.651 170.476 130.744 169.032 128.893C167.625 127.005 165.7 125.45 163.256 124.228C160.812 123.006 157.684 122.395 153.87 122.395C148.649 122.395 144.299 123.598 140.818 126.005C137.375 128.375 135.653 131.392 135.653 135.058C135.653 138.316 136.838 140.89 139.207 142.778C141.577 144.666 145.28 146.24 150.315 147.499L162.978 150.609C170.606 152.46 176.289 155.293 180.029 159.106C183.768 162.883 185.638 167.752 185.638 173.713C185.638 178.601 184.231 182.97 181.417 186.82C178.64 190.671 174.753 193.707 169.754 195.929C164.756 198.15 158.942 199.261 152.315 199.261C143.614 199.261 136.412 197.373 130.71 193.596C125.008 189.82 121.398 184.303 119.88 177.046L132.321 173.935C133.505 178.527 135.746 181.97 139.041 184.266C142.373 186.561 146.724 187.709 152.093 187.709C158.202 187.709 163.052 186.413 166.644 183.821C170.272 181.192 172.087 178.045 172.087 174.38C172.087 171.418 171.05 168.937 168.977 166.937C166.903 164.901 163.719 163.383 159.424 162.383L145.206 159.051C137.393 157.2 131.654 154.33 127.989 150.442C124.36 146.517 122.546 141.612 122.546 135.724C122.546 130.911 123.897 126.653 126.6 122.95C129.34 119.248 133.061 116.341 137.763 114.231C142.503 112.12 147.872 111.065 153.87 111.065C162.312 111.065 168.939 112.916 173.753 116.619C178.603 120.321 182.047 125.209 184.083 131.281ZM236.213 112.176V123.284H192.004V112.176H236.213ZM204.889 91.7373H217.996V173.047C217.996 176.749 218.533 179.526 219.607 181.378C220.717 183.192 222.124 184.414 223.828 185.043C225.568 185.636 227.401 185.932 229.326 185.932C230.77 185.932 231.955 185.858 232.881 185.71C233.806 185.525 234.547 185.376 235.102 185.265L237.768 197.04C236.879 197.373 235.639 197.706 234.047 198.039C232.455 198.41 230.437 198.595 227.993 198.595C224.29 198.595 220.662 197.799 217.107 196.207C213.59 194.614 210.665 192.189 208.332 188.931C206.037 185.673 204.889 181.563 204.889 176.601V91.7373ZM274.777 199.483C269.371 199.483 264.465 198.465 260.059 196.429C255.653 194.355 252.154 191.375 249.562 187.487C246.97 183.562 245.675 178.823 245.675 173.269C245.675 168.381 246.637 164.42 248.563 161.383C250.488 158.31 253.061 155.904 256.283 154.163C259.504 152.423 263.058 151.127 266.946 150.276C270.871 149.387 274.814 148.684 278.776 148.165C283.96 147.499 288.162 146.999 291.383 146.666C294.642 146.295 297.011 145.684 298.492 144.833C300.01 143.981 300.769 142.5 300.769 140.39V139.945C300.769 134.465 299.27 130.207 296.271 127.171C293.309 124.135 288.81 122.617 282.775 122.617C276.517 122.617 271.611 123.987 268.057 126.727C264.502 129.467 262.003 132.392 260.559 135.502L248.118 131.059C250.34 125.875 253.302 121.84 257.005 118.952C260.744 116.026 264.817 113.99 269.223 112.842C273.666 111.657 278.035 111.065 282.33 111.065C285.07 111.065 288.218 111.398 291.772 112.065C295.364 112.694 298.826 114.009 302.158 116.008C305.527 118.007 308.323 121.025 310.544 125.061C312.766 129.097 313.877 134.502 313.877 141.278V197.484H300.769V185.932H300.103C299.214 187.783 297.733 189.764 295.66 191.875C293.586 193.985 290.828 195.781 287.385 197.262C283.941 198.743 279.739 199.483 274.777 199.483ZM276.777 187.709C281.96 187.709 286.329 186.691 289.884 184.654C293.475 182.618 296.178 179.989 297.993 176.768C299.844 173.547 300.769 170.159 300.769 166.604V154.608C300.214 155.274 298.992 155.885 297.104 156.44C295.253 156.959 293.105 157.422 290.661 157.829C288.255 158.199 285.903 158.532 283.608 158.829C281.349 159.088 279.516 159.31 278.109 159.495C274.703 159.939 271.519 160.661 268.557 161.661C265.632 162.624 263.262 164.086 261.448 166.049C259.67 167.974 258.782 170.603 258.782 173.935C258.782 178.49 260.467 181.933 263.836 184.266C267.242 186.561 271.556 187.709 276.777 187.709Z" fill="rgba(255,255,255,0.9)"/>
+        <path d="M369.44 173.573V156.213H352.549V148.081H369.44V130.72H377.573V148.081H394.464V156.213H377.573V173.573H369.44ZM410.399 71.9144C406.229 71.9144 402.684 70.5069 399.764 67.6917C396.949 64.8765 395.542 61.3315 395.542 57.0566C395.542 52.886 396.949 49.3931 399.764 46.5779C402.684 43.6584 406.229 42.1987 410.399 42.1987C414.674 42.1987 418.219 43.6584 421.035 46.5779C423.954 49.3931 425.414 52.886 425.414 57.0566C425.414 61.3315 423.954 64.8765 421.035 67.6917C418.219 70.5069 414.674 71.9144 410.399 71.9144ZM410.399 63.4689C412.276 63.4689 413.788 62.8955 414.935 61.7485C416.186 60.4973 416.812 58.9334 416.812 57.0566C416.812 55.2841 416.186 53.8243 414.935 52.6774C413.788 51.4262 412.276 50.8006 410.399 50.8006C408.627 50.8006 407.115 51.4262 405.864 52.6774C404.717 53.8243 404.144 55.2841 404.144 57.0566C404.144 58.9334 404.717 60.4973 405.864 61.7485C407.115 62.8955 408.627 63.4689 410.399 63.4689ZM459.886 104.758V80.6728H470.99V104.758H459.886ZM428.919 124.152V113.047H453.005V124.152H428.919ZM478.341 124.152V113.047H502.427V124.152H478.341ZM459.886 156.213V132.128H470.99V156.213H459.886Z" fill="#FF5233"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S02 · WHAT IS AN LLM
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-concept" id="s2">
+    <div class="label">What you will learn here</div>
+    <h2>Syllabus</h2>
+    <ul>
+      <li><span class="arrow">→</span><span><strong>01 · AI Primitives</strong> <span class="dim">— LLMs, tokens, context, hallucinations</span></span></li>
+      <li><span class="arrow">→</span><span><strong>02 · Prompt Engineering</strong> <span class="dim">— The RICE framework and 5 tips</span></span></li>
+      <li><span class="arrow">→</span><span><strong>03 · Context Management</strong> <span class="dim">— Tell AI who you are once</span></span></li>
+      <li><span class="arrow">→</span><span><strong>04 · Agent Orchestration</strong> <span class="dim">— From chat to delegation</span></span></li>
+      <li><span class="arrow">→</span><span><strong>05 · Security &amp; Reliability</strong> <span class="dim">— What never to share</span></span></li>
+      <li><span class="arrow">→</span><span><strong>06 · Skills Pack + Q&amp;A</strong> <span class="dim">— Ready-to-use prompts for your role</span></span></li>
+    </ul>
+  </div>
+
+  <div class="slide t-concept" id="s3">
+    <img src="deck-assets/neural-network-llm.png" alt="Neural network predicting next word" class="slide-img right-float">
+    <div class="label">01 · AI primitives</div>
+    <h2 style="max-width:620px">An LLM is a text prediction engine,<br><span class="muted">not a thinking machine</span></h2>
+    <ul>
+      <li><span class="arrow">→</span><span>Trained on massive text. Predicts what comes next.</span></li>
+      <li><span class="arrow">→</span><span>Statistical patterns, <strong>not understanding</strong></span></li>
+      <li><span class="arrow">→</span><span>That's why it can be brilliant and confidently wrong in the same sentence</span></li>
+      <li><span class="arrow">→</span><span>Think of it as a new hire who read the entire internet but <strong>knows nothing about your company</strong></span></li>
+    </ul>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S04 · CORE VOCAB
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-concept" id="s4">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid var(--orange);opacity:0.85;"></div>
+    <div class="label">01 · AI primitives</div>
+    <h2>Four concepts you need to know</h2>
+    <div class="vocab-grid">
+      <div class="v-card">
+        <div class="v-term">Token</div>
+        <div class="v-def">The basic unit an LLM reads and writes. Roughly one word or word fragment. Everything you send and receive is measured in tokens. <strong>The entire Harry Potter series = 1.1M tokens.</strong></div>
+      </div>
+      <div class="v-card">
+        <div class="v-term">Prompt</div>
+        <div class="v-def">Your input to the model: the instruction, question, or context you provide. <strong>The quality of your prompt determines the quality of the output.</strong></div>
+      </div>
+      <div class="v-card">
+        <div class="v-term">Context window</div>
+        <div class="v-def">How much the model can hold in working memory at once. Claude's window fits <strong>200K tokens (~500 pages)</strong>. Longer conversations degrade recall. This is "context rot."</div>
+      </div>
+      <div class="v-card">
+        <div class="v-term">Hallucination</div>
+        <div class="v-def">When the model generates something that sounds confident and correct but is fabricated. It doesn't know it's wrong. <strong>Always verify critical facts.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S05 · TOKENIZER VISUAL
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-visual" id="s5">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid var(--orange);opacity:0.85;"></div>
+    <div class="label">01 · AI primitives</div>
+    <h2><span class="muted">This is how the model sees your text,</span> in tokens</h2>
+    <div style="max-width:820px;width:100%;">
+      <img src="deck-assets/tokenizer-screenshot.png" alt="OpenAI Tokenizer, each color is one token" class="slide-img" style="max-height:425px;width:auto;">
+      <div class="ph-sub" style="margin-top:8px"><a href="https://platform.openai.com/tokenizer" target="_blank" style="color:inherit;text-decoration:underline;text-underline-offset:3px;opacity:0.7;">platform.openai.com/tokenizer</a> · each color = one token</div>
+    </div>
+  </div>
+
+  <div class="slide t-concept" id="s13">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid rgba(228,226,216,0.15);"></div>
+    <div class="label">03 · Context management</div>
+    <h2><span class="muted">Long chat? Don't delete.</span><br>Compact it.</h2>
+    <ul>
+      <li><span class="arrow">→</span><span>The instinct is to start fresh or delete old messages. <strong>Don't.</strong></span></li>
+      <li><span class="arrow">→</span><span>Dropping messages wipes context the model was using, you get worse output without knowing why.</span></li>
+      <li><span class="arrow">→</span><span>Better move: ask the model to <strong>summarize the conversation so far</strong>, then continue.</span></li>
+      <li><span class="arrow">→</span><span>This keeps what matters and frees up space. Claude calls this <strong>compaction.</strong></span></li>
+    </ul>
+  </div>
+
+  <!--â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S06 · MODEL TIERS
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-table" id="s6">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid var(--orange);opacity:0.85;"></div>
+    <div class="label">01 · AI primitives</div>
+    <h2>Not all models are equal.<br><span class="muted">Pick the right one for the job.</span></h2>
+    <table>
+      <thead><tr><th>Task</th><th>Model</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Quick Q&A, repetitive tasks</td>
+          <td><strong>Haiku 4.5</strong></td>
+          <td>Fast, cheap, good enough</td>
+        </tr>
+        <tr>
+          <td><strong>Daily work (90% of your time)</strong></td>
+          <td><strong>Sonnet 4.6</strong></td>
+          <td><strong>Best speed/quality balance</strong></td>
+        </tr>
+        <tr>
+          <td>Complex analysis, critical code</td>
+          <td><strong>Opus 4.6</strong></td>
+          <td>Maximum reasoning power</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="t-caption">Start with Sonnet. If the output is mediocre, try Opus before rewriting your prompt five times.</p>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S07 · DOOR
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-quote" id="s7">
+    <div class="ring" style="width:40vh;height:40vh;border:5vh solid rgba(255,82,51,0.15);"></div>
+    <blockquote>
+      You've got the mental model. Knowing what AI is gets you maybe 20% of the way. The other 80% is <strong>how you ask and structure.</strong>
+    </blockquote>
+    <div class="next">→ Prompt engineering</div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S08 · RICE INTRO
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-concept" id="s8">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid var(--blue);opacity:0.75;"></div>
+    <div class="label">02 · Prompt engineering</div>
+    <h2><span style="color:var(--orange)">RICE:</span> <span class="muted">four questions that structure</span> any prompt</h2>
+    <div class="rice-grid">
+      <div class="rice-card">
+        <div class="rice-num">01</div>
+        <div class="rice-letter">R</div>
+        <div class="rice-title">Role</div>
+        <div class="rice-sub">Who is the model?</div>
+      </div>
+      <div class="rice-card">
+        <div class="rice-num">02</div>
+        <div class="rice-letter">I</div>
+        <div class="rice-title">Instructions</div>
+        <div class="rice-sub">What needs to be done?</div>
+      </div>
+      <div class="rice-card">
+        <div class="rice-num">03</div>
+        <div class="rice-letter">C</div>
+        <div class="rice-title">Context</div>
+        <div class="rice-sub">What background does it need?</div>
+      </div>
+      <div class="rice-card">
+        <div class="rice-num">04</div>
+        <div class="rice-letter">E</div>
+        <div class="rice-title">Examples</div>
+        <div class="rice-sub">What does good output look like?</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S09 · BAD vs RICE
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-compare" id="s9">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid var(--blue);opacity:0.75;"></div>
+    <div class="label">02 · Prompt engineering</div>
+    <h2><span class="muted">Same task.</span> Very different results.</h2>
+    <div class="cmp-wrap">
+      <div class="cmp-col bad">
+        <div class="cmp-label">Without framework</div>
+        <div class="cmp-body">
+          "Write an email to an exchange, make it look professional, make no mistakes"
+        </div>
+      </div>
+      <div class="cmp-col good">
+        <div class="cmp-label">With RICE</div>
+        <div class="cmp-body">
+          <span class="cmp-row"><strong>Role:</strong> BizDev lead at Deframe, DeFi infra for onchain neobanks in LatAm</span>
+          <span class="cmp-row"><strong>Instructions:</strong> Post-meeting follow-up to [Exchange Name]</span>
+          <span class="cmp-row"><strong>Context:</strong> They want our yield API. Main concern: regulatory compliance in Brazil</span>
+          <span class="cmp-row"><strong>Examples:</strong> Tone like our last outreach. Under 200 words, professional but warm.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S10 · EXERCISE: RICE
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S11 · 5 TIPS
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-concept" id="s10">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid var(--blue);opacity:0.75;"></div>
+    <div class="label">02 · Prompt engineering</div>
+    <h2><span class="muted">Five tips that improve</span> any prompt</h2>
+    <ul>
+      <li><span class="arrow">→</span><span><strong>Be specific.</strong> Not "write an email" but "5-sentence follow-up, optimistic tone, no smart contract jargon"</span></li>
+      <li><span class="arrow">→</span><span><strong>Break complex tasks into steps.</strong> Ask for the outline first, then each section separately</span></li>
+      <li><span class="arrow">→</span><span><strong>"Think step by step"</strong> triggers deeper reasoning. Fewer errors on multi-variable problems.</span></li>
+      <li><span class="arrow">→</span><span><strong>Request your format.</strong> Table, JSON, bullets, markdown. If you don't say, the model guesses.</span></li>
+      <li><span class="arrow">→</span><span><strong>Iterate, don't perfect.</strong> A decent prompt refined in 3 turns beats chasing the perfect first shot.</span></li>
+    </ul>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S12 · HUMAN IN THE LOOP
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-concept" id="s11">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid var(--blue);opacity:0.75;"></div>
+    <div class="label">02 · Prompt engineering</div>
+    <h2><span class="muted">AI multiplies your output.</span><br>Your judgment is still the input.</h2>
+    <ul>
+      <li><span class="arrow">→</span><span>The most reliable setup is <strong>AI drafting, a human reviewing</strong></span></li>
+      <li><span class="arrow">→</span><span>No single model does everything. <strong>Combine tools.</strong></span></li>
+      <li><span class="arrow">→</span><span>This workshop was built with AI, but a human reviewed every section, adjusted the tone, and removed what didn't apply</span></li>
+      <li><span class="arrow">→</span><span>Today it's Claude, tomorrow it could be something else. <strong>Don't marry a tool.</strong></span></li>
+    </ul>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S13 · DOOR
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-quote" id="s12">
+    <div class="ring" style="width:40vh;height:40vh;border:5vh solid rgba(144,202,249,0.12);"></div>
+    <blockquote>
+      Good prompting gets you most of the way there. But every new chat, the AI starts from zero, no memory of who you are, what you do, or how you communicate. <strong>There's a better solution.</strong>
+    </blockquote>
+    <div class="next">→ Context management</div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S14 · PERSISTENT CONTEXT
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-concept" id="s14">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid var(--green);opacity:0.80;"></div>
+    <div class="label">03 · Context management</div>
+    <h2><span class="muted">Tell the AI who you are once.</span><br>Let it remember.</h2>
+    <ul>
+      <li><span class="arrow">→</span><span>Repeating context every chat wastes tokens and creates inconsistencies</span></li>
+      <li><span class="arrow">→</span><span><strong>Claude</strong> has Projects · <strong>OpenAI</strong> has Custom GPTs · <strong>Google</strong> has Gems</span></li>
+      <li><span class="arrow">→</span><span>Markdown is the format AI reads best. Your context doc should be a <strong>.md</strong> file</span></li>
+    </ul>
+    <div class="note" style="border-color:rgba(181,217,168,0.4);background:rgba(181,217,168,0.04)">
+      <div class="note-body" style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:0.06em;text-transform:uppercase">Live demo next → claude.ai Projects</div>
+    </div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S15 · DEMO: CLAUDE PROJECTS
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-demo" id="s15">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid var(--green);opacity:0.80;"></div>
+    <div class="label">03 · Context management · Demo</div>
+    <h2><span class="muted">Creating the</span> "Pods Finance Context"</h2>
+    <div class="ex-steps" style="gap:14px">
+      <div class="ex-step"><div class="sn">1</div><span>claude.ai → Projects → New Project</span></div>
+      <div class="ex-step"><div class="sn">2</div><span>Paste context into "Custom instructions"</span></div>
+      <div class="ex-step"><div class="sn">3</div><span>Upload a doc (one-pager or pitch deck)</span></div>
+      <div class="ex-step"><div class="sn">4</div><span>Start a conversation. It already knows who Pods is.</span></div>
+    </div>
+    <div style="margin-top:20px;overflow:hidden;border-radius:2px;border:1px solid var(--border2);max-width:820px;">
+      <img src="deck-assets/claude-projects-ui.png" alt="Claude Projects UI: custom instructions and knowledge base" class="slide-img" style="border:none;max-height:360px;width:auto;">
+    </div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S16 · EXERCISE: SYSTEM PROMPT
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-exercise" id="s16">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid var(--green);opacity:0.80;"></div>
+    <div class="label">03 · Context management · Collaborative exercise</div>
+    <h2><span class="muted">Let's build the Pods system prompt,</span> together</h2>
+    <div class="ex-card">
+      <div class="ex-template">
+        We are <span class="var">[COMPANY_NAME]</span>, a platform that <span class="var">[ONE_LINER]</span>.<br>
+        Our customers are <span class="var">[TARGET_AUDIENCE]</span>, primarily in <span class="var">[REGIONS]</span>.<br>
+        Our tech stack includes <span class="var">[TECH_STACK]</span>.<br>
+        When we write, our tone is <span class="var">[TONE_ADJECTIVES]</span>.<br>
+        We never discuss <span class="var">[PRICING, PERSONAL INFO, ...]</span>.
+      </div>
+      <div class="timer" style="margin-top:16px">
+        <span>5 min to fill</span><span class="tsep">·</span>
+        <span>merge in Claude</span><span class="tsep">·</span>
+        <span>save as company-context.md</span>
+      </div>
+    </div>
+    <p style="margin-top:12px;font-size:12px;color:var(--muted)">This file is the deliverable you walk out with today.</p>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S17 · DOOR
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-quote" id="s17">
+    <div class="ring" style="width:40vh;height:40vh;border:5vh solid rgba(181,217,168,0.12);"></div>
+    <blockquote>
+      The AI knows who you are now. <strong>You've been treating it like a chat window.</strong> There's a different mode where you stop prompting and <strong>start delegating.</strong>
+    </blockquote>
+    <div class="next">→ Agent orchestration</div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S18 · WHAT IS AN AGENT
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-concept" id="s18">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid rgba(228,226,216,0.15);"></div>
+    <div class="label">04 · Agent orchestration</div>
+    <h2><span class="muted">A chat answers once.</span> An agent figures out the steps itself.</h2>
+    <ul>
+      <li><span class="arrow">→</span><span><strong>Chat:</strong> you ask, it answers, it waits for you. One turn.</span></li>
+      <li><span class="arrow">→</span><span><strong>Agent:</strong> LLM + context + tools + <strong>a loop</strong>. Takes a step, sees the result, decides what's next.</span></li>
+      <li><span class="arrow">→</span><span>The <strong>loop</strong> is the difference. It runs until the task is done, or until it hits a wall and needs your call.</span></li>
+      <li><span class="arrow">→</span><span><strong>Analogy:</strong> <strong>chat</strong> = asking a colleague a quick question. <strong>Agent</strong> = <strong>delegating a project</strong> to a colleague who figures out the steps.</span></li>
+    </ul>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S19 · NATIVE TOOLS
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-concept" id="s19">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid rgba(228,226,216,0.15);"></div>
+    <div class="label">04 · Agent orchestration</div>
+    <h2>AI Native Tools</h2>
+    <ul>
+      <li><span class="arrow">→</span><span><strong>Web search:</strong> browse the internet, pull live data, not just training knowledge</span></li>
+      <li><span class="arrow">→</span><span><strong>Code execution:</strong> write and run code, process spreadsheets, calculate</span></li>
+      <li><span class="arrow">→</span><span><strong>File reading and writing:</strong> work with documents you provide</span></li>
+      <li><span class="arrow">→</span><span><strong>Image analysis:</strong> describe, compare, extract data from visuals</span></li>
+    </ul>
+    <div class="note">
+      <div class="note-label">No developer required</div>
+      <div class="note-body">Claude on claude.ai already has most of these. <strong>You don't need a developer to start.</strong> Open claude.ai and try it after this session.</div>
+    </div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S20 · RIGHT-SIZING
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-table" id="s20">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid rgba(228,226,216,0.15);"></div>
+    <div class="label">04 · Agent orchestration</div>
+    <h2><span class="muted">Start simple.</span> Add complexity only when you hit a wall.</h2>
+    <table>
+      <thead><tr><th>Level</th><th>What it is</th><th>When to use it</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Copy-paste prompt</strong></td>
+          <td><strong>A well-written prompt you reuse</strong></td>
+          <td><strong>80% of your daily work</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Scheduled prompt</strong></td>
+          <td>Same prompt, runs on a timer</td>
+          <td>Daily summaries, weekly reports, recurring checks</td>
+        </tr>
+        <tr>
+          <td><strong>Single agent + tools</strong></td>
+          <td>LLM + native tools, multi-step</td>
+          <td>Research + draft tasks, anything with multiple steps</td>
+        </tr>
+        <tr>
+          <td><strong>Orchestrator</strong></td>
+          <td>Multiple agents in parallel</td>
+          <td>Complex pipelines: research + draft + review simultaneously</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="t-caption">The best automation is the one you actually use. Don't over-engineer.</p>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S21 · MCP + VISUAL
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-visual" id="s21">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid rgba(228,226,216,0.15);"></div>
+    <div class="label">04 · Agent orchestration</div>
+    <h2><span class="muted">MCP gives the AI hands.</span> It can pull live data, not just talk about it.</h2>
+    <div style="max-width:820px;width:100%;">
+      <img src="deck-assets/augmented-llm-diagram.png" alt="Augmented LLM: Retrieval, Tools, Memory" class="slide-img" style="max-height:351px;width:auto;background:rgba(255,255,255,0.95);padding:12px 16px;border-radius:4px;">
+    </div>
+    <p style="margin-top:12px;font-size:13px;color:var(--muted);max-width:640px;line-height:1.6">Key judgment: can the model handle this with what it already has, or do I need to connect it to something?</p>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S22 · HUMAN-IN-THE-LOOP DESIGN
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-concept" id="s22">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid rgba(228,226,216,0.15);"></div>
+    <div class="label">04 · Agent orchestration</div>
+    <h2>Human-in-the-loop <span class="muted">is a</span> design decision, <span class="muted">not a philosophy</span></h2>
+    <ul>
+      <li><span class="arrow">→</span><span>When you build an agent workflow, you're choosing where it runs on autopilot <strong>and where it pauses for you</strong></span></li>
+      <li><span class="arrow">→</span><span>The agent handles the grunt work. The human approves at the decision points.</span></li>
+      <li><span class="arrow">→</span><span>The most reliable systems aren't fully autonomous. They have <strong>checkpoints</strong></span></li>
+      <li><span class="arrow">→</span><span>Design question: "At which steps does <strong>human judgment change the outcome?</strong>" Those are your checkpoints.</span></li>
+    </ul>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S23 · DOOR
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-quote" id="s23">
+    <div class="ring" style="width:40vh;height:40vh;border:5vh solid rgba(228,226,216,0.08);"></div>
+    <blockquote>
+      You know what agents can do in theory. The real question is <strong>what you should actually hand off.</strong> Not all the Twitter hype holds up yet. Let's talk about where it actually works.
+    </blockquote>
+    <div class="next">→ Security &amp; reliability</div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S24 · GOLDEN RULE
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-concept" id="s24">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid rgba(255,82,51,0.6);"></div>
+    <div class="label">05 · Security &amp; reliability</div>
+    <h2 style="font-size:clamp(1.9rem,3vw,3rem);max-width:580px">
+      <span class="muted">If you wouldn't post it on your X feed,</span> don't paste it into an AI tool
+    </h2>
+    <ul>
+      <li><span class="arrow">→</span><span>AI providers <strong>can see your chat history</strong></span></li>
+      <li><span class="arrow">→</span><span>Once you paste sensitive data, it's no longer yours alone</span></li>
+      <li><span class="arrow">→</span><span>This applies to <strong>all</strong> tools. Claude, ChatGPT, Gemini, Copilot. Same risk.</span></li>
+    </ul>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S25 · BIZDEV FLOWCHART
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-visual" id="s25">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid rgba(255,82,51,0.3);opacity:0.6;"></div>
+    <div class="label">05 · Security &amp; reliability</div>
+    <h2>Where AI fits in a real BizDev workflow</h2>
+    <div style="margin-top:8px;width:100%;">
+      <!-- Flow steps — flex:1 on each card so they scale to fill any viewport width -->
+      <div style="display:flex;align-items:center;width:100%;padding:4px 0 12px;">
+
+        <!-- Step 1 -->
+        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div style="border:1px solid rgba(255,82,51,0.5);background:rgba(255,82,51,0.08);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
+            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--orange);text-transform:uppercase;margin-bottom:4px;">Step 1</div>
+            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Identify targets</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:10px;color:rgba(255,82,51,0.7);letter-spacing:0.08em;text-transform:uppercase;">AI</div>
+        </div>
+
+        <div style="flex:0 0 12px;height:1px;background:rgba(228,226,216,0.15);margin-bottom:22px;"></div>
+
+        <!-- Step 2 -->
+        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div style="border:1px solid rgba(255,82,51,0.5);background:rgba(255,82,51,0.08);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
+            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--orange);text-transform:uppercase;margin-bottom:4px;">Step 2</div>
+            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Research stack &amp; positioning</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:10px;color:rgba(255,82,51,0.7);letter-spacing:0.08em;text-transform:uppercase;">AI</div>
+        </div>
+
+        <div style="flex:0 0 12px;height:1px;background:rgba(228,226,216,0.15);margin-bottom:22px;"></div>
+
+        <!-- Step 3 -->
+        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div style="border:1px solid rgba(144,202,249,0.45);background:rgba(144,202,249,0.06);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
+            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--blue);text-transform:uppercase;margin-bottom:4px;">Step 3</div>
+            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Find contact <span style="color:rgba(255,200,50,0.9);">&#9888;</span> verify</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:10px;color:rgba(144,202,249,0.7);letter-spacing:0.08em;text-transform:uppercase;">Human</div>
+        </div>
+
+        <div style="flex:0 0 12px;height:1px;background:rgba(228,226,216,0.15);margin-bottom:22px;"></div>
+
+        <!-- Step 4 -->
+        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div style="border:1px solid rgba(255,82,51,0.5);background:rgba(255,82,51,0.08);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
+            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--orange);text-transform:uppercase;margin-bottom:4px;">Step 4</div>
+            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Draft outreach email</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:10px;color:rgba(255,82,51,0.7);letter-spacing:0.08em;text-transform:uppercase;">AI</div>
+        </div>
+
+        <div style="flex:0 0 12px;height:1px;background:rgba(228,226,216,0.15);margin-bottom:22px;"></div>
+
+        <!-- Step 5 -->
+        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div style="border:1px solid rgba(144,202,249,0.45);background:rgba(144,202,249,0.06);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
+            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--blue);text-transform:uppercase;margin-bottom:4px;">Step 5</div>
+            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Evaluate strategic fit</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:10px;color:rgba(144,202,249,0.7);letter-spacing:0.08em;text-transform:uppercase;">Human</div>
+        </div>
+
+        <div style="flex:0 0 12px;height:1px;background:rgba(228,226,216,0.15);margin-bottom:22px;"></div>
+
+        <!-- Step 6 -->
+        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div style="border:1px solid rgba(144,202,249,0.45);background:rgba(144,202,249,0.06);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
+            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--blue);text-transform:uppercase;margin-bottom:4px;">Step 6</div>
+            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Negotiate terms</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:10px;color:rgba(144,202,249,0.7);letter-spacing:0.08em;text-transform:uppercase;">Human</div>
+        </div>
+
+        <div style="flex:0 0 12px;height:1px;background:rgba(228,226,216,0.15);margin-bottom:22px;"></div>
+
+        <!-- Step 7 -->
+        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div style="border:1px solid rgba(255,82,51,0.5);background:rgba(255,82,51,0.08);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
+            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--orange);text-transform:uppercase;margin-bottom:4px;">Step 7</div>
+            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Follow-up &amp; deal memo</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:10px;color:rgba(255,82,51,0.7);letter-spacing:0.08em;text-transform:uppercase;">AI</div>
+        </div>
+
+      </div>
+
+      <!-- Legend -->
+      <div style="display:flex;gap:24px;align-items:center;margin-top:4px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:10px;height:10px;border:1px solid rgba(255,82,51,0.5);background:rgba(255,82,51,0.12);flex-shrink:0;"></div>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--orange);letter-spacing:0.1em;text-transform:uppercase;">AI-assisted</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:10px;height:10px;border:1px solid rgba(144,202,249,0.45);background:rgba(144,202,249,0.08);flex-shrink:0;"></div>
+          <span style="font-family:var(--mono);font-size:11px;color:var(--blue);letter-spacing:0.1em;text-transform:uppercase;">Human in the loop</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S26 · SECURITY TABLE
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-table" id="s26">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid rgba(255,82,51,0.6);"></div>
+    <div class="label">05 · Security &amp; reliability</div>
+    <h2><span class="muted">When in doubt,</span> check the table</h2>
+    <table style="max-width:660px">
+      <thead><tr><th>Data</th><th>Share?</th></tr></thead>
+      <tbody>
+        <tr><td>Open source code, public docs</td><td style="color:#66bb6a">Yes</td></tr>
+        <tr><td>Drafts, ideas, internal meeting notes</td><td style="color:#ffa726">With caution</td></tr>
+        <tr><td>Private keys, seed phrases</td><td><span style="color:#ef9a9a;font-weight:600;">ABSOLUTELY NOT</span></td></tr>
+        <tr><td>Production API keys</td><td><span style="color:#ef9a9a;font-weight:600;">NEVER</span></td></tr>
+        <tr><td>Client data (KYC, wallets)</td><td style="color:#ffa726">Only if anonymized</td></tr>
+        <tr><td>Code that handles funds</td><td style="color:#ffa726">OK for review, never for final audit</td></tr>
+        <tr><td>Multi-sig configurations</td><td><span style="color:#ef9a9a;font-weight:600;">DON'T EVER THINK ABOUT IT</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S27 · SKILLS PACK TABLE
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-table" id="s27">
+    <div class="ring" style="width:52vh;height:52vh;border:7vh solid var(--orange);opacity:0.85;"></div>
+    <div class="label">06 · Q&amp;A + Skills pack</div>
+    <h2>Vista Skills Pack for Pods.<br><span class="muted">6 skills, ready to use today.</span></h2>
+    <table>
+      <thead><tr><th>Skill</th><th>Role</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><strong>competitive-intel</strong></td><td>BizDev / Sales</td><td style="color:var(--muted)">Raw notes → competitor brief</td></tr>
+        <tr><td><strong>sales-objection-handler</strong></td><td>Sales</td><td style="color:var(--muted)">Objection → reframe + call script + follow-up</td></tr>
+        <tr><td><strong>deal-memo</strong></td><td>Sales / BD</td><td>Meeting notes → structured deal memo + next steps</td></tr>
+        <tr><td><strong>campaign-angles</strong></td><td>Marketing</td><td style="color:var(--muted)">One input → 5 campaign angles per persona</td></tr>
+        <tr><td><strong>content-repurposer</strong></td><td>Marketing</td><td style="color:var(--muted)">One source → LinkedIn + X thread + email + blog</td></tr>
+        <tr><td><strong>prd-lite</strong></td><td>PM-lite</td><td style="color:var(--muted)">Chaotic notes → lightweight product spec</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S28 · DEMO: DEAL MEMO
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       S29 · RESOURCES + CLOSE
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+  <div class="slide t-resource" id="s28">
+    <div class="label">06 · Resources</div>
+    <h2>What you're taking home,<br><span class="muted">and where to go deeper</span></h2>
+    <div class="res-list">
+      <div class="res-row"><strong>Skills Pack</strong> <a href="https://github.com/vistawtf/pods-skill-pack-1" target="_blank" style="color:inherit;opacity:0.75;text-decoration:underline;text-underline-offset:3px;">github.com/vistawtf/pods-skill-pack-1</a></div>
+      <div class="res-row"><strong>Anthropic Academy</strong> <a href="https://anthropic.skilljar.com/claude-101" target="_blank" style="color:inherit;opacity:0.75;text-decoration:underline;text-underline-offset:3px;">Claude 101 Course (free, certificate included)</a></div>
+      <div class="res-row"><strong>Prompting 101</strong> <a href="https://www.youtube.com/watch?v=ysPbXH0LpIE" target="_blank" style="color:inherit;opacity:0.75;text-decoration:underline;text-underline-offset:3px;">Code w/ Claude, 24 min video</a></div>
+      <div class="res-row"><strong>Interactive Tutorial</strong> <a href="https://docs.google.com/spreadsheets/d/19jzLgRruG9kjUQNKtCg1ZjdD6l6weA6qRXG5zLIAhC8" target="_blank" style="color:inherit;opacity:0.75;text-decoration:underline;text-underline-offset:3px;">Anthropic Google Sheets</a></div>
+      <div class="res-row"><strong>Building Effective Agents</strong> <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" style="color:inherit;opacity:0.75;text-decoration:underline;text-underline-offset:3px;">Anthropic Blog</a></div>
+    </div>
+        <div style="margin-top:20px;">
+      <span style="font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,180,180,0.55);">Made with </span><span style="font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--orange);">&#9829;</span><span style="font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,180,180,0.55);"> by </span><span style="font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--orange);">Vista</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const N = 28;
+  let cur = 1;
+
+  function go(n) {
+    if (n < 1 || n > N) return;
+    document.getElementById('s' + cur).classList.remove('active');
+    cur = n;
+    document.getElementById('s' + cur).classList.add('active');
+    document.getElementById('progress-fill').style.width = (cur / N * 100) + '%';
+    const p = x => String(x).padStart(2, '0');
+    document.getElementById('counter').textContent = p(cur) + ' / ' + p(N);
+  }
+
+  document.addEventListener('keydown', e => {
+    const fwd = ['ArrowRight', ' ', 'ArrowDown', 'PageDown'];
+    const bwd = ['ArrowLeft', 'Backspace', 'ArrowUp', 'PageUp'];
+    if (fwd.includes(e.key)) { e.preventDefault(); go(cur + 1); }
+    else if (bwd.includes(e.key)) { e.preventDefault(); go(cur - 1); }
+    else if (e.key === 'Home') go(1);
+    else if (e.key === 'End') go(N);
+  });
+
+</script>
+</body>
+</html>
+
