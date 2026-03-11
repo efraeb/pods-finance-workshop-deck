@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -63,6 +63,10 @@
       overflow: hidden;
     }
     .slide.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .slide > :not(.funnel-visual) {
+      position: relative;
+      z-index: 1;
+    }
 
     /* Section label */
     .label {
@@ -71,7 +75,7 @@
       color: var(--orange);
       margin-bottom: 20px; flex-shrink: 0;
     }
-    .t-cover { justify-content: center; padding-bottom: 0; }
+    .t-cover { justify-content: center; align-items: flex-start; padding-bottom: 0; }
     .t-cover .top-label {
       position: absolute; top: 32px; left: 8%;
       font-family: var(--mono); font-size: 11px; font-weight: 700;
@@ -82,6 +86,7 @@
       font-size: clamp(64px, 7.5vw, 96px);
       font-weight: 400; letter-spacing: -0.03em; line-height: 1.0;
       color: #ffffff; max-width: 540px;
+      text-wrap: balance;
     }
     .t-cover h1 .orange {
       color: #ffffff;
@@ -91,21 +96,30 @@
       margin-top: 12px;
       font-size: clamp(16px, 1.875vw, 24px); font-weight: 300;
       color: var(--muted); max-width: 420px; line-height: 1.5;
+      text-wrap: balance;
     }
-    /* Vista logo bottom-left */
+    /* Vista logo */
     .vista-logo {
       position: absolute; bottom: 32px; left: 8%;
       display: flex; align-items: center; gap: 8px;
     }
+    .t-cover .vista-logo {
+      position: static;
+      margin-top: 20px;
+      max-width: 460px;
+    }
     .vista-logo span {
       font-family: var(--font); font-size: 15px; font-weight: 300;
-      letter-spacing: -0.01em; color: rgba(255,255,255,0.9);
+      letter-spacing: -0.01em; color: rgba(255,255,255,0.9); line-height: 1.4;
     }
     .t-concept h2 {
-      font-size: clamp(1.8rem, 3vw, 3.2rem);
+      font-size: clamp(2rem, 3.4vw, 3.6rem);
       font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
-      color: var(--cream); max-width: 620px;
+      color: var(--cream); max-width: 700px;
       margin-bottom: 32px; flex-shrink: 0;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
     }
     .t-concept h2 .orange { color: var(--orange); }
     .t-concept h2 .muted { color: var(--muted); font-weight: 300; }
@@ -113,7 +127,7 @@
     .t-concept ul { list-style: none; max-width: 620px; display: flex; flex-direction: column; gap: 14px; }
     .t-concept li {
       display: flex; gap: 14px; align-items: flex-start;
-      font-size: clamp(14px, 1.4vw, 17px); line-height: 1.6;
+      font-size: clamp(15px, 1.55vw, 19px); line-height: 1.62;
       color: rgba(228,226,216,0.85);
     }
     .t-concept li .arrow {
@@ -138,7 +152,7 @@
       letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--orange); margin-bottom: 8px;
     }
-    .v-def { font-size: 15px; line-height: 1.65; color: rgba(228,226,216,0.82); }
+    .v-def { font-size: 16px; line-height: 1.68; color: rgba(228,226,216,0.82); }
     .v-def strong { color: var(--cream); font-weight: 500; }
 
     .proof-intro {
@@ -156,8 +170,8 @@
     }
     .proof-intro p {
       max-width: 700px;
-      font-size: 16px;
-      line-height: 1.7;
+      font-size: 17px;
+      line-height: 1.72;
       color: rgba(228,226,216,0.76);
     }
     .proof-grid {
@@ -190,7 +204,7 @@
       margin-bottom: 10px;
     }
     .proof-meta {
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.55;
       color: rgba(228,226,216,0.72);
     }
@@ -219,7 +233,7 @@
       letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--orange); margin-bottom: 4px;
     }
-    .rice-sub { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .rice-sub { font-size: 14px; color: var(--muted); line-height: 1.56; }
 
     /* note box */
     .note {
@@ -233,7 +247,7 @@
       letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--orange); margin-bottom: 4px;
     }
-    .note-body { font-size: 14px; line-height: 1.55; color: rgba(228,226,216,0.75); }
+    .note-body { font-size: 15px; line-height: 1.6; color: rgba(228,226,216,0.75); }
     .note-body strong { color: var(--cream); }
     .t-quote {
       justify-content: center;
@@ -253,20 +267,23 @@
       color: rgba(255,82,51,0.75);
     }
     .t-table h2 {
-      font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+      font-size: clamp(1.9rem, 2.8vw, 2.9rem);
       font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
-      color: var(--cream); max-width: 560px;
+      color: var(--cream); max-width: 720px;
       margin-bottom: 28px; flex-shrink: 0;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
     }
     .t-table h2 .orange { color: var(--orange); }
     table {
       border-collapse: collapse;
       max-width: 760px; width: 100%;
-      font-size: 14px;
+      font-size: 15px;
     }
     th {
       text-align: left;
-      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      font-family: var(--mono); font-size: 12px; font-weight: 700;
       letter-spacing: 0.14em; text-transform: uppercase;
       color: var(--muted); padding: 9px 16px;
       border-bottom: 1px solid var(--border2);
@@ -275,7 +292,7 @@
       padding: 12px 16px;
       color: rgba(228,226,216,0.78);
       border-bottom: 1px solid var(--border);
-      line-height: 1.45;
+      line-height: 1.55;
     }
     tr:last-child td { border-bottom: none; }
     td strong { color: var(--cream); font-weight: 500; }
@@ -291,10 +308,13 @@
       text-transform: uppercase;
     }
     .t-compare h2 {
-      font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+      font-size: clamp(1.9rem, 2.8vw, 2.9rem);
       font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
-      color: var(--cream); max-width: 560px;
+      color: var(--cream); max-width: 700px;
       margin-bottom: 24px; flex-shrink: 0;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
     }
     .t-compare h2 .orange { color: var(--orange); }
     .cmp-wrap {
@@ -314,7 +334,7 @@
     }
     .cmp-col.bad  .cmp-label { color: rgba(228,226,216,0.65); }
     .cmp-col.good .cmp-label { color: var(--orange); }
-    .cmp-body { font-size: 15px; line-height: 1.75; color: rgba(228,226,216,0.6); }
+    .cmp-body { font-size: 16px; line-height: 1.78; color: rgba(228,226,216,0.6); }
     .cmp-col.bad .cmp-body { font-style: italic; color: rgba(228,226,216,0.75); }
     .cmp-col.good .cmp-body { color: rgba(228,226,216,0.85); }
     .cmp-row { display: block; margin-top: 3px; }
@@ -332,35 +352,364 @@
       color: var(--cream);
       max-width: 920px;
       margin-bottom: 18px;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
     }
     .t-cue p {
       max-width: 620px;
-      font-size: 16px;
-      line-height: 1.65;
+      font-size: 18px;
+      line-height: 1.68;
       color: rgba(228,226,216,0.72);
     }
     .t-visual h2 {
-      font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+      font-size: clamp(1.9rem, 2.8vw, 2.9rem);
       font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
-      color: var(--cream); max-width: 560px;
+      color: var(--cream); max-width: 700px;
       margin-bottom: 24px; flex-shrink: 0;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
     }
     .t-visual h2 .orange { color: var(--orange); }
-    .t-resource h2 {
-      font-size: clamp(1.6rem, 2.4vw, 2.4rem);
-      font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
-      color: var(--cream); max-width: 560px;
-      margin-bottom: 28px; flex-shrink: 0;
+    .workflow-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px 18px;
+      width: 100%;
+      max-width: 980px;
     }
-    .t-resource h2 .orange { color: var(--orange); }
-    .res-list { display: flex; flex-direction: column; gap: 10px; max-width: 640px; }
-    .res-row {
-      display: flex; gap: 12px; align-items: flex-start;
-      font-size: 13.5px; line-height: 1.5;
+    .workflow-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 142px;
+      padding: 18px 18px 16px;
+      border: 1px solid rgba(228,226,216,0.12);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.025);
+    }
+    .workflow-card.human {
+      border-color: rgba(144,202,249,0.34);
+      background: rgba(144,202,249,0.06);
+    }
+    .workflow-card.ai {
+      border-color: rgba(255,82,51,0.36);
+      background: rgba(255,82,51,0.08);
+    }
+    .workflow-card.empty {
+      opacity: 0;
+      pointer-events: none;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+    .workflow-step {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .workflow-card.human .workflow-step { color: var(--blue); }
+    .workflow-card.ai .workflow-step { color: var(--orange); }
+    .workflow-title {
+      font-size: 16px;
+      line-height: 1.35;
+      color: var(--cream);
+      max-width: 18ch;
+    }
+    .workflow-role {
+      margin-top: 18px;
+      align-self: flex-start;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    .workflow-card.human .workflow-role {
+      color: var(--blue);
+      background: rgba(144,202,249,0.08);
+      border: 1px solid rgba(144,202,249,0.22);
+    }
+    .workflow-card.ai .workflow-role {
+      color: var(--orange);
+      background: rgba(255,82,51,0.09);
+      border: 1px solid rgba(255,82,51,0.24);
+    }
+    .workflow-note {
+      margin-top: 16px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(180,180,180,0.58);
+    }
+    .funnel-visual {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(90deg, rgba(17,17,17,0.98) 0%, rgba(17,17,17,0.94) 44%, rgba(17,17,17,0.78) 72%, rgba(17,17,17,0.44) 100%),
+        url('deck-assets/frame-110.png');
+      background-repeat: no-repeat;
+      background-size: auto 112%;
+      background-position: 115% center;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid rgba(228,226,216,0.14);
+      background: rgba(255,255,255,0.06);
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.8);
+      margin-bottom: 18px;
+    }
+    .t-cta {
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .t-cta h2 {
+      font-size: clamp(2.4rem, 4.4vw, 4.1rem);
+      font-weight: 400;
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+      color: var(--cream);
+      max-width: 760px;
+      margin-bottom: 18px;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
+    }
+    .t-cta p {
+      max-width: 700px;
+      font-size: clamp(18px, 1.8vw, 22px);
+      line-height: 1.68;
+      color: rgba(228,226,216,0.78);
+    }
+    .t-cta-soft {
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .t-cta-soft .pill-badge {
+      margin-bottom: 22px;
+    }
+    .soft-cta-copy {
+      max-width: 960px;
+      font-size: clamp(1.8rem, 3.4vw, 3.15rem);
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      line-height: 1.12;
       color: rgba(228,226,216,0.7);
+      text-wrap: balance;
     }
-    .res-row::before { content: '\2192'; color: var(--orange); font-family: var(--mono); font-size: 10px; margin-top: 3px; flex-shrink: 0; }
-    .res-row strong { color: var(--cream); font-weight: 500; }
+    .soft-cta-copy strong {
+      color: var(--cream);
+      font-weight: 400;
+    }
+    .soft-cta-copy .orange {
+      color: var(--orange);
+      font-weight: 400;
+    }
+    .cta-hero {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      max-width: 620px;
+    }
+    .cta-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cream);
+      text-decoration: none;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255,82,51,0.32);
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+    .cta-inline:hover {
+      color: var(--orange);
+      border-color: rgba(255,82,51,0.65);
+    }
+    .cta-subproof {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.62);
+    }
+    .cta-panel {
+      margin-top: 18px;
+      max-width: 760px;
+      padding: 22px 24px;
+      border: 1px solid rgba(255,82,51,0.28);
+      background: rgba(255,82,51,0.05);
+    }
+    .cta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 16px;
+    }
+    .cta-link {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 13px 18px;
+      border-radius: 3px;
+      background: var(--orange);
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+    .cta-link:hover {
+      background: #e64a2e;
+    }
+    .cta-link.secondary {
+      color: var(--cream);
+      background: transparent;
+      border: 1px solid rgba(228,226,216,0.15);
+      box-shadow: none;
+    }
+    .cta-link.secondary:hover {
+      background: rgba(255,82,51,0.06);
+      border-color: rgba(255,82,51,0.35);
+      color: var(--orange);
+    }
+    .micro-proof {
+      margin-top: 14px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(180,180,180,0.62);
+    }
+    .cta-enti {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #111111;
+      text-decoration: none;
+      padding: 14px 20px;
+      border-radius: 3px;
+      background: #ffffff;
+      transition: background 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 2px 8px rgba(255,255,255,0.1);
+    }
+    .cta-enti:hover {
+      background: #f5f5f5;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255,255,255,0.15);
+    }
+    .cta-enti img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .soft-links {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+      margin-top: 28px;
+      max-width: 940px;
+    }
+    .soft-links a {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 140px;
+      padding: 22px 24px;
+      border-radius: 8px;
+      border: 1px solid rgba(228,226,216,0.12);
+      background: rgba(255,255,255,0.03);
+      color: var(--cream);
+      text-decoration: none;
+      transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    }
+    .soft-links a:hover {
+      border-color: rgba(255,82,51,0.30);
+      background: rgba(255,82,51,0.05);
+      transform: translateY(-1px);
+    }
+    .soft-links a:first-child {
+      grid-row: span 2;
+      min-height: 294px;
+      background: linear-gradient(180deg, rgba(255,82,51,0.06) 0%, rgba(255,255,255,0.03) 100%);
+      border-color: rgba(255,82,51,0.18);
+    }
+    .soft-links strong {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      font-weight: 700;
+    }
+    .soft-links span {
+      font-size: 15px;
+      line-height: 1.6;
+      color: rgba(228,226,216,0.74);
+    }
+    .soft-links .soft-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.46);
+    }
+    .trust-strip {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      margin-top: 30px;
+    }
+    .trust-strip img {
+      height: 32px;
+      width: auto;
+      opacity: 0.74;
+    }
+    .section-note {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(180,180,180,0.62);
+      margin-bottom: 14px;
+    }
 
     /* Slide images */
     .slide-img {
@@ -377,12 +726,39 @@
       border: none;
       opacity: 0.92;
     }
+    .org-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 820px;
+      margin-top: 28px;
+    }
+    .org-card {
+      padding: 28px 30px;
+      border: 1px solid var(--border2);
+      background: rgba(255,255,255,0.02);
+      border-radius: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .org-logo {
+      height: 28px;
+      width: auto;
+      object-fit: contain;
+      object-position: left;
+    }
+    .org-desc {
+      font-size: 16px;
+      line-height: 1.68;
+      color: rgba(228,226,216,0.82);
+    }
   </style>
 </head>
 <body>
 
 <div id="progress"><div id="progress-fill"></div></div>
-<div id="counter">01 / 22</div>
+<div id="counter">01 / 24</div>
 
 <div id="deck">
 
@@ -398,8 +774,8 @@
   <div class="slide t-concept" id="s2">
     <div class="label">Quienes somos</div>
     <div class="proof-intro">
-      <h2>Somos el equipo detras de ETH Latam.</h2>
-      <p>Este taller es una colaboracion entre Arco y Vista para acercar la IA de forma clara, practica y accesible a mas personas.</p>
+      <h2>Somos el equipo detras de ETH&nbsp;Latam.</h2>
+      <p>Hemos estado desarrollando el ecosistema Ethereum en Latinoamerica desde 2019, fomentando el encuentro de builders y comunidad en toda la region.</p>
     </div>
     <div class="proof-grid">
       <div class="proof-card">
@@ -419,15 +795,40 @@
       </div>
       <div class="proof-card">
         <div class="proof-label">Ciudades</div>
-        <div class="proof-stat">  4 ciudades</div>
+        <div class="proof-stat">4 ciudades</div>
         <div class="proof-meta">Buenos Aires, Bogota, San Pedro Sula y Sao Paulo</div>
       </div>
     </div>
   </div>
 
   <div class="slide t-concept" id="s3">
+    <div class="label">Quienes somos</div>
+    <h2>Experiencia en tecnologia.<br><span class="muted">De estrategia a producto.</span></h2>
+
+    <div class="org-grid">
+      <div class="org-card">
+        <img src="deck-assets/arco-white.png" alt="Arco" class="org-logo">
+        <div class="org-desc">Go-to-market strategy para Web3 en LATAM. Educacion, eventos y expansion de ecosistema.</div>
+      </div>
+      <div class="org-card">
+        <img src="deck-assets/vista-lockup-dark.svg" alt="Vista" class="org-logo">
+        <div class="org-desc">Research y ejecucion en blockchain y IA. Training de modelos, agent systems y protocolos production-ready.</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 36px;">
+      <div style="font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(180,180,180,0.62);margin-bottom:16px;">Hemos trabajado con:</div>
+      <div class="trust-strip">
+        <img src="deck-assets/apeco.svg" alt="Apeco" style="height:24px;opacity:0.88;">
+        <img src="deck-assets/obol.svg" alt="Obol" style="height:30px;opacity:0.88;">
+        <img src="deck-assets/eth-latam-white.svg" alt="ETH Latam" style="height:36px;opacity:0.9;">
+      </div>
+    </div>
+  </div>
+
+  <div class="slide t-concept" id="s4">
     <div class="label">Que veremos hoy</div>
-    <h2>La IA ya esta cambiando como trabajamos, aprendemos y creamos.</h2>
+    <h2>La IA ya esta cambiando como trabajamos, aprendemos y&nbsp;creamos.</h2>
     <ul>
       <li><span class="arrow">&#8594;</span><span>Que hace bien, que hace mal y cuando conviene usarla</span></li>
       <li><span class="arrow">&#8594;</span><span>Como elegir la herramienta segun la tarea, no segun el hype</span></li>
@@ -436,7 +837,7 @@
     </ul>
   </div>
 
-  <div class="slide t-concept" id="s4">
+  <div class="slide t-concept" id="s5">
     <img src="deck-assets/neural-network-llm.png" alt="Diagrama de red neuronal" class="slide-img right-float">
     <div class="label">01 &middot; Conceptos base</div>
     <h2>Un LLM predice texto.<br><span class="muted">No piensa como tu.</span></h2>
@@ -448,9 +849,9 @@
     </ul>
   </div>
 
-  <div class="slide t-concept" id="s5">
+  <div class="slide t-concept" id="s6">
     <div class="label">01 &middot; Conceptos base</div>
-    <h2 style="max-width:760px">Cuatro conceptos para no perderte</h2>
+    <h2 style="max-width:760px">Cuatro conceptos para no&nbsp;perderte</h2>
     <div class="vocab-grid">
       <div class="v-card">
         <div class="v-term">Modelo</div>
@@ -471,9 +872,21 @@
     </div>
   </div>
 
-  <div class="slide t-concept" id="s6">
+  <div class="slide t-visual" id="s7">
     <div class="label">01 &middot; Conceptos base</div>
-    <h2 style="max-width:760px">La IA es util, pero tiene limites reales</h2>
+    <h2>Asi ve tu texto un&nbsp;modelo</h2>
+    <div style="max-width:860px;width:100%;">
+      <img src="deck-assets/tokenizer-screenshot.png" alt="Captura de tokenizer con colores por token" class="slide-img" style="max-height:400px;width:auto;">
+      <div style="margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(180,180,180,0.68);">Cada color = un token</div>
+      <div style="margin-top:14px;max-width:700px;padding:14px 16px;border:1px solid rgba(255,82,51,0.22);background:rgba(255,82,51,0.04);font-size:14px;line-height:1.6;color:rgba(228,226,216,0.76);">
+        Dato curioso: toda Harry Potter en ingles son aprox. 1.44M tokens.
+      </div>
+    </div>
+  </div>
+
+  <div class="slide t-concept" id="s8">
+    <div class="label">01 &middot; Conceptos base</div>
+    <h2 style="max-width:760px">La IA es util, pero tiene limites&nbsp;reales</h2>
     <ul>
       <li><span class="arrow">&#8594;</span><span>Puede inventar datos, fuentes o detalles cuando no sabe</span></li>
       <li><span class="arrow">&#8594;</span><span>No siempre tiene informacion actualizada si no puede buscar en la web</span></li>
@@ -482,9 +895,9 @@
     </ul>
   </div>
 
-  <div class="slide t-table" id="s7">
+  <div class="slide t-table" id="s9">
     <div class="label">02 &middot; Herramientas</div>
-    <h2 style="max-width:760px">No todas las herramientas hacen lo mismo</h2>
+    <h2 style="max-width:760px">No todas las herramientas hacen&nbsp;lo&nbsp;mismo</h2>
     <table>
       <thead><tr><th>Tipo</th><th>Sirve para</th><th>Ejemplos</th></tr></thead>
       <tbody>
@@ -497,14 +910,14 @@
     <p class="t-caption">Piensa en familias de herramientas primero. La marca viene despues.</p>
   </div>
 
-  <div class="slide t-concept" id="s8">
+  <div class="slide t-concept" id="s10">
     <div class="label">02 &middot; Herramientas</div>
     <h2>Empieza por la tarea.<br><span class="muted">Luego elige la herramienta.</span></h2>
     <ul>
-      <li><span class="arrow">&#8594;</span><span>Si necesitas actualidad, usa una herramienta con web y fuentes visibles</span></li>
-      <li><span class="arrow">&#8594;</span><span>Si necesitas claridad o borradores, empieza por un chat generalista</span></li>
-      <li><span class="arrow">&#8594;</span><span>Si necesitas estructura, pide tablas, checklist o pasos concretos</span></li>
-      <li><span class="arrow">&#8594;</span><span>Si una tarea se repite mucho, guarda un prompt reutilizable</span></li>
+      <li><span class="arrow">&#8594;</span><span>Si necesitas informacion actual, usa una herramienta con busqueda y fuentes visibles</span></li>
+      <li><span class="arrow">&#8594;</span><span>Si necesitas pensar, resumir o redactar, empieza por un chat generalista</span></li>
+      <li><span class="arrow">&#8594;</span><span>Si necesitas aprender desde un material, usa una herramienta pensada para estudiar</span></li>
+      <li><span class="arrow">&#8594;</span><span>Define primero la salida que quieres: resumen, tabla, draft, lista o decision</span></li>
     </ul>
     <div class="note">
       <div class="note-label">Regla simple</div>
@@ -512,7 +925,7 @@
     </div>
   </div>
 
-  <div class="slide t-concept" id="s9">
+  <div class="slide t-concept" id="s11">
     <div class="label">03 &middot; Prompting</div>
     <h2>Promptear bien es dar contexto.<br><span class="muted">No usar palabras magicas.</span></h2>
     <ul>
@@ -523,9 +936,9 @@
     </ul>
   </div>
 
-  <div class="slide t-concept" id="s10">
+  <div class="slide t-concept" id="s12">
     <div class="label">03 &middot; Prompting</div>
-    <h2 style="max-width:none;font-size:clamp(1.45rem,2.3vw,2.7rem);white-space:nowrap;">Una formula simple para promptear mejor</h2>
+    <h2 style="max-width:none;font-size:clamp(1.45rem,2.2vw,2.6rem);white-space:nowrap;">RICE: una formula simple para promptear&nbsp;mejor</h2>
     <div class="rice-grid">
       <div class="rice-card">
         <div class="rice-num">01</div>
@@ -535,8 +948,8 @@
       </div>
       <div class="rice-card">
         <div class="rice-num">02</div>
-        <div class="rice-letter">T</div>
-        <div class="rice-title">Tarea</div>
+        <div class="rice-letter">I</div>
+        <div class="rice-title">Instruccion</div>
         <div class="rice-sub">Que necesitas exactamente</div>
       </div>
       <div class="rice-card">
@@ -547,14 +960,14 @@
       </div>
       <div class="rice-card">
         <div class="rice-num">04</div>
-        <div class="rice-letter">F</div>
-        <div class="rice-title">Formato</div>
+        <div class="rice-letter">E</div>
+        <div class="rice-title">Entrega</div>
         <div class="rice-sub">Como quieres recibir la respuesta</div>
       </div>
     </div>
   </div>
 
-  <div class="slide t-compare" id="s11">
+  <div class="slide t-compare" id="s13">
     <div class="label">03 &middot; Prompting</div>
     <h2><span class="muted">Misma tarea.</span><br>Resultado totalmente distinto.</h2>
     <div class="cmp-wrap">
@@ -563,20 +976,20 @@
         <div class="cmp-body">"Hazme un email para mover una reunion"</div>
       </div>
       <div class="cmp-col good">
-        <div class="cmp-label">Con contexto</div>
+        <div class="cmp-label">Con RICE</div>
         <div class="cmp-body">
           <span class="cmp-row"><strong>Rol:</strong> asistente que escribe claro y cordial</span>
-          <span class="cmp-row"><strong>Tarea:</strong> redacta un email breve para mover una reunion</span>
+          <span class="cmp-row"><strong>Instruccion:</strong> redacta un email breve para mover una reunion</span>
           <span class="cmp-row"><strong>Contexto:</strong> ya estaba confirmada; quiero proponer jueves a las 11am</span>
-          <span class="cmp-row"><strong>Formato:</strong> asunto + 5 lineas maximo + tono amable</span>
+          <span class="cmp-row"><strong>Entrega:</strong> asunto + 5 lineas maximo + tono amable</span>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="slide t-concept" id="s12">
+  <div class="slide t-concept" id="s14">
     <div class="label">03 &middot; Prompting</div>
-    <h2><span class="muted">Cinco habitos</span> que mejoran cualquier resultado</h2>
+    <h2><span class="muted">Cinco habitos</span> que mejoran cualquier&nbsp;resultado</h2>
     <ul>
       <li><span class="arrow">&#8594;</span><span><strong>Se especifico.</strong> Mejor breve y claro que largo y ambiguo</span></li>
       <li><span class="arrow">&#8594;</span><span><strong>Divide tareas complejas.</strong> Primero esquema, luego detalle</span></li>
@@ -586,19 +999,15 @@
     </ul>
   </div>
 
-  <div class="slide t-concept" id="s13">
-    <div class="label">05 &middot; Workflows</div>
-    <h2>No tienes que cambiar tu vida.<br><span class="muted">Empieza con un workflow peque&ntilde;o.</span></h2>
-    <ul>
-      <li><span class="arrow">&#8594;</span><span>Resume un texto largo antes de leerlo completo</span></li>
-      <li><span class="arrow">&#8594;</span><span>Convierte notas desordenadas en una lista de accion</span></li>
-      <li><span class="arrow">&#8594;</span><span>Transforma un borrador flojo en una version mas clara</span></li>
-      <li><span class="arrow">&#8594;</span><span>Usa IA al inicio para pensar y al final para pulir</span></li>
-    </ul>
+  <div class="slide t-cta-soft" id="s15">
+    <div class="funnel-visual"></div>
+    <div class="label">03 &middot; Prompting</div>
+    <div class="pill-badge">Prompt Pack PDF</div>
+    <div class="soft-cta-copy">Preparamos un <strong>paquete de prompts</strong> basico para que puedan <span class="orange">experimentar</span> despues del taller.<br><br>Se los dejamos en sus mensajes de <strong>lu.ma</strong> 💬</div>
   </div>
 
-  <div class="slide t-concept" id="s14">
-    <div class="label">05 &middot; Workflows</div>
+  <div class="slide t-concept" id="s16">
+    <div class="label">04 &middot; Workflows</div>
     <h2>Delega la friccion.<br><span class="muted">Conserva el criterio.</span></h2>
     <ul>
       <li><span class="arrow">&#8594;</span><span>La IA puede proponer, ordenar, resumir y redactar</span></li>
@@ -608,9 +1017,9 @@
     </ul>
   </div>
 
-  <div class="slide t-concept" id="s15">
-    <div class="label">06 &middot; Seguridad</div>
-    <h2><span class="muted">Si no lo pondrias en un email abierto,</span> no lo pegues sin pensar</h2>
+  <div class="slide t-concept" id="s18">
+    <div class="label">05 &middot; Seguridad</div>
+    <h2><span class="muted">Si no lo pondrias en un email abierto,</span> no lo pegues sin&nbsp;pensar</h2>
     <ul>
       <li><span class="arrow">&#8594;</span><span>Evita pegar datos sensibles, credenciales, contratos o informacion privada</span></li>
       <li><span class="arrow">&#8594;</span><span>Anonimiza nombres y datos cuando solo necesitas trabajar la estructura</span></li>
@@ -619,122 +1028,127 @@
     </ul>
   </div>
 
-  <div class="slide t-visual" id="s16">
-    <div class="label">06 &middot; Workflow ejemplo</div>
-    <h2>Un flujo simple: investigar &rarr; resumir &rarr; draft &rarr; revisar</h2>
-    <div style="margin-top:8px;width:100%;">
-      <div style="display:flex;align-items:center;width:100%;padding:4px 0 12px;">
-        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
-          <div style="border:1px solid rgba(144,202,249,0.45);background:rgba(144,202,249,0.06);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
-            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--blue);text-transform:uppercase;margin-bottom:4px;">Paso 1</div>
-            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Definir la pregunta</div>
-          </div>
-          <div style="font-family:var(--mono);font-size:10px;color:rgba(144,202,249,0.7);letter-spacing:0.08em;text-transform:uppercase;">Humano</div>
+  <div class="slide t-visual" id="s17">
+    <div class="label">04 &middot; Workflow ejemplo</div>
+    <h2>Un flujo simple:<br><span class="muted">investigar</span> <span class="orange">&rarr;</span> <span class="muted">resumir</span> <span class="orange">&rarr;</span> <span class="muted">draft</span> <span class="orange">&rarr;</span>&nbsp;<span class="muted">revisar</span></h2>
+    <div class="workflow-grid">
+      <div class="workflow-card human">
+        <div>
+          <div class="workflow-step">Paso 1</div>
+          <div class="workflow-title">Definir la pregunta</div>
         </div>
-        <div style="flex:0 0 12px;height:1px;background:rgba(228,226,216,0.15);margin-bottom:22px;"></div>
-        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
-          <div style="border:1px solid rgba(255,82,51,0.5);background:rgba(255,82,51,0.08);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
-            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--orange);text-transform:uppercase;margin-bottom:4px;">Paso 2</div>
-            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Buscar y reunir material</div>
-          </div>
-          <div style="font-family:var(--mono);font-size:10px;color:rgba(255,82,51,0.7);letter-spacing:0.08em;text-transform:uppercase;">IA</div>
-        </div>
-        <div style="flex:0 0 12px;height:1px;background:rgba(228,226,216,0.15);margin-bottom:22px;"></div>
-        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
-          <div style="border:1px solid rgba(255,82,51,0.5);background:rgba(255,82,51,0.08);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
-            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--orange);text-transform:uppercase;margin-bottom:4px;">Paso 3</div>
-            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Resumir hallazgos</div>
-          </div>
-          <div style="font-family:var(--mono);font-size:10px;color:rgba(255,82,51,0.7);letter-spacing:0.08em;text-transform:uppercase;">IA</div>
-        </div>
-        <div style="flex:0 0 12px;height:1px;background:rgba(228,226,216,0.15);margin-bottom:22px;"></div>
-        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
-          <div style="border:1px solid rgba(255,82,51,0.5);background:rgba(255,82,51,0.08);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
-            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--orange);text-transform:uppercase;margin-bottom:4px;">Paso 4</div>
-            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Armar borrador</div>
-          </div>
-          <div style="font-family:var(--mono);font-size:10px;color:rgba(255,82,51,0.7);letter-spacing:0.08em;text-transform:uppercase;">IA</div>
-        </div>
-        <div style="flex:0 0 12px;height:1px;background:rgba(228,226,216,0.15);margin-bottom:22px;"></div>
-        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
-          <div style="border:1px solid rgba(144,202,249,0.45);background:rgba(144,202,249,0.06);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
-            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--blue);text-transform:uppercase;margin-bottom:4px;">Paso 5</div>
-            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Verificar y editar</div>
-          </div>
-          <div style="font-family:var(--mono);font-size:10px;color:rgba(144,202,249,0.7);letter-spacing:0.08em;text-transform:uppercase;">Humano</div>
-        </div>
-        <div style="flex:0 0 12px;height:1px;background:rgba(228,226,216,0.15);margin-bottom:22px;"></div>
-        <div style="flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:6px;">
-          <div style="border:1px solid rgba(144,202,249,0.45);background:rgba(144,202,249,0.06);padding:9px 8px;border-radius:2px;width:100%;text-align:center;">
-            <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--blue);text-transform:uppercase;margin-bottom:4px;">Paso 6</div>
-            <div style="font-size:11px;color:var(--cream);line-height:1.35;">Entregar o decidir</div>
-          </div>
-          <div style="font-family:var(--mono);font-size:10px;color:rgba(144,202,249,0.7);letter-spacing:0.08em;text-transform:uppercase;">Humano</div>
-        </div>
+        <div class="workflow-role">Humano</div>
       </div>
-      <div style="display:flex;gap:24px;align-items:center;margin-top:4px;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="width:10px;height:10px;border:1px solid rgba(255,82,51,0.5);background:rgba(255,82,51,0.12);flex-shrink:0;"></div>
-          <span style="font-family:var(--mono);font-size:11px;color:var(--orange);letter-spacing:0.1em;text-transform:uppercase;">IA ayuda</span>
+      <div class="workflow-card ai">
+        <div>
+          <div class="workflow-step">Paso 2</div>
+          <div class="workflow-title">Buscar y reunir material</div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div style="width:10px;height:10px;border:1px solid rgba(144,202,249,0.45);background:rgba(144,202,249,0.08);flex-shrink:0;"></div>
-          <span style="font-family:var(--mono);font-size:11px;color:var(--blue);letter-spacing:0.1em;text-transform:uppercase;">Tu decides</span>
-        </div>
+        <div class="workflow-role">IA</div>
       </div>
+      <div class="workflow-card ai">
+        <div>
+          <div class="workflow-step">Paso 3</div>
+          <div class="workflow-title">Resumir hallazgos</div>
+        </div>
+        <div class="workflow-role">IA</div>
+      </div>
+      <div class="workflow-card ai">
+        <div>
+          <div class="workflow-step">Paso 4</div>
+          <div class="workflow-title">Armar borrador</div>
+        </div>
+        <div class="workflow-role">IA</div>
+      </div>
+      <div class="workflow-card human">
+        <div>
+          <div class="workflow-step">Paso 5</div>
+          <div class="workflow-title">Verificar, editar y decidir</div>
+        </div>
+        <div class="workflow-role">Humano</div>
+      </div>
+      <div class="workflow-card empty" aria-hidden="true"></div>
     </div>
-  </div>
-
-  <div class="slide t-cue" id="s17">
-    <div class="label">07 &middot; Demos</div>
-    <h2>Aprendizaje asistido con NotebookLM</h2>
-    <p>Explorar un tema, resumir fuentes y convertir PDFs o videos en material util.</p>
-  </div>
-
-  <div class="slide t-cue" id="s18">
-    <div class="label">07 &middot; Demos</div>
-    <h2>Trabajo sobre archivos con Claude Cowork</h2>
-    <p>Le das una carpeta y un objetivo; organiza materiales, analiza contenido y prepara entregables.</p>
+    <div class="workflow-note">Se lee de izquierda a derecha. La IA acelera el medio del flujo; el criterio vuelve a ti al final.</div>
   </div>
 
   <div class="slide t-cue" id="s19">
-    <div class="label">07 &middot; Demos</div>
-    <h2>Prospecting con IA</h2>
-    <p>Extraer perfiles, detectar patrones y priorizar oportunidades con datos publicos.</p>
+    <div class="label">06 &middot; Demos</div>
+    <h2>Aprendizaje asistido con&nbsp;NotebookLM</h2>
+    <p>Explorar un tema, resumir fuentes y convertir PDFs o videos en material util.</p>
   </div>
 
   <div class="slide t-cue" id="s20">
-    <div class="label">07 &middot; Demos</div>
-    <h2>OpenClaw como asistente personal</h2>
+    <div class="label">06 &middot; Demos</div>
+    <h2>Trabajo sobre archivos con&nbsp;Claude Cowork</h2>
+    <p>Le das una carpeta y un objetivo; organiza materiales, analiza contenido y prepara entregables.</p>
+  </div>
+
+  <div class="slide t-cue" id="s21">
+    <div class="label">06 &middot; Demos</div>
+    <h2>Prospecting con&nbsp;IA</h2>
+    <p>Extraer perfiles, detectar patrones y priorizar oportunidades con datos publicos.</p>
+  </div>
+
+  <div class="slide t-cue" id="s22">
+    <div class="label">06 &middot; Demos</div>
+    <h2>OpenClaw como asistente&nbsp;personal</h2>
     <p>Vive en tus chats, recuerda contexto y ejecuta tareas por ti.</p>
   </div>
 
-  <div class="slide t-resource" id="s21">
-    <div class="label">08 &middot; Recursos</div>
-    <h2>Para seguir practicando,<br><span class="muted">sin casarte con una sola marca</span></h2>
-    <div class="res-list">
-      <div class="res-row"><strong>Arco &amp; Vista</strong> <a href="https://arco.lat/" target="_blank" style="color:inherit;opacity:0.75;text-decoration:underline;text-underline-offset:3px;">arco.lat</a> &middot; <a href="https://vista.wtf/" target="_blank" style="color:inherit;opacity:0.75;text-decoration:underline;text-underline-offset:3px;">vista.wtf</a></div>
-      <div class="res-row"><strong>Tokenizer</strong> <a href="https://platform.openai.com/tokenizer" target="_blank" style="color:inherit;opacity:0.75;text-decoration:underline;text-underline-offset:3px;">platform.openai.com/tokenizer</a></div>
-      <div class="res-row"><strong>OpenAI Prompting</strong> <a href="https://platform.openai.com/docs/guides/prompting" target="_blank" style="color:inherit;opacity:0.75;text-decoration:underline;text-underline-offset:3px;">guia oficial</a></div>
-      <div class="res-row"><strong>Anthropic Prompt Engineering</strong> <a href="https://docs.anthropic.com/en/docs/prompt-engineering" target="_blank" style="color:inherit;opacity:0.75;text-decoration:underline;text-underline-offset:3px;">guia oficial</a></div>
-      <div class="res-row"><strong>Google Prompt Design</strong> <a href="https://ai.google.dev/guide/prompt_best_practices" target="_blank" style="color:inherit;opacity:0.75;text-decoration:underline;text-underline-offset:3px;">guia oficial</a></div>
-    </div>
-    <div style="margin-top:20px;">
-      <span style="font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(180,180,180,0.55);">Prueba el mismo prompt en dos herramientas y compara </span><span style="font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--orange);">criterio &gt; hype</span>
+  <div class="slide t-cta" id="s23">
+    <div class="funnel-visual"></div>
+    <div class="label">07 &middot; Siguiente paso</div>
+    <div class="pill-badge">Briefing & scope inicial &middot; sin compromiso</div>
+    <h2>Trae un workflow.<br><span class="muted">Te ayudamos a automatizarlo.</span></h2>
+    <p style="color:var(--cream);">
+      ¿Tienes una tarea que te quita tiempo todas las semanas?<br>
+      <span style="color:rgba(228,226,216,0.78);">Traela y te ayudamos a <span style="color:var(--orange);">resolverla</span>, <span style="color:var(--orange);">automatizarla</span> o<br>convertirla en un <span style="color:var(--orange);">sistema</span> que trabaje por ti.</span>
+    </p>
+    <div class="cta-hero">
+      <a class="cta-enti" href="https://app.youform.com/forms/5pkgb4ir" target="_blank">
+        <img src="enti.png" alt="Enti">
+        <img src="lola.png" alt="Lola">
+        Agenda 15 min con Enti &amp; Lola
+      </a>
     </div>
   </div>
 
-  <div class="slide t-quote" id="s22">
-    <blockquote>
-      No necesitas dominar todas las herramientas hoy. Necesitas una base para <strong>probar, comparar y trabajar con criterio.</strong>
-    </blockquote>
-    <div class="next">Preguntas, casos y cierre</div>
+  <div class="slide t-concept" id="s24">
+    <div class="funnel-visual"></div>
+    <div class="label">08 &middot; Cierre</div>
+    <h2 style="max-width:900px">Si quieres seguir cerca, aqui estan los siguientes pasos</h2>
+    <div style="max-width:700px;font-size:17px;line-height:1.7;color:rgba(228,226,216,0.72);">
+      Dejamos un CTA principal en la slide anterior. Aqui tienes los secundarios, ordenados y sin estorbar.
+    </div>
+    <div class="soft-links">
+      <a href="https://paragraph.com/@vista" target="_blank">
+        <strong>Newsletter</strong>
+        <span>Recibe ideas, herramientas y experimentos de IA sin tener que perseguirnos luego.</span>
+        <div class="soft-meta">Lectura corta &middot; senal alta</div>
+      </a>
+      <a href="https://arco.lat/" target="_blank">
+        <strong>Comunidad</strong>
+        <span>Conectate con builders, eventos y conversaciones que siguen despues del workshop.</span>
+        <div class="soft-meta">Eventos &middot; gente &middot; contexto</div>
+      </a>
+      <a href="https://vista.wtf/" target="_blank">
+        <strong>Vista</strong>
+        <span>Explora que estamos construyendo y como trabajamos automatizacion, research y producto.</span>
+        <div class="soft-meta">Estudio &middot; systems &middot; IA aplicada</div>
+      </a>
+    </div>
+    <div class="trust-strip">
+      <img src="deck-assets/vista-lockup-dark.svg" alt="Vista">
+      <img src="deck-assets/arco-white.png" alt="Arco">
+      <img src="deck-assets/eth-latam-white.svg" alt="ETH Latam">
+    </div>
   </div>
 
 </div>
 
 <script>
-  const N = 22;
+  const N = 24;
   let cur = 1;
 
   function go(n) {
@@ -760,4 +1174,5 @@
 </script>
 </body>
 </html>
+
 
