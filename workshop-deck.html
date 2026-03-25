@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Claude Cowork + Claude Code | Arco x Vista</title>
-  <link rel="icon" href="favicon.ico" />
+  <title>IA 101 | Arco x Vista</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -12,22 +11,22 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #111111;
-      --cream: #E4E2D8;
-      --muted: #9B9B9B;
-      --dim: #5F5F5F;
-      --orange: #FF5233;
-      --surface: #1A1A1A;
-      --border: rgba(228,226,216,0.10);
-      --border-strong: rgba(228,226,216,0.18);
-      --font: 'Geist', system-ui, sans-serif;
-      --mono: 'Geist Mono', 'SF Mono', 'Monaco', monospace;
+      --bg:      #111111;
+      --cream:   #E4E2D8;
+      --muted:   #9B9B9B;
+      --dim:     #555555;
+      --orange:  #FF5233;
+      --blue:    #90CAF9;
+      --green:   #B5D9A8;
+      --surface: #1a1a1a;
+      --border:  rgba(228,226,216,0.10);
+      --border2: rgba(228,226,216,0.18);
+      --font:    'Geist', system-ui, sans-serif;
+      --mono:    'Geist Mono', 'SF Mono', 'Monaco', monospace;
     }
 
     html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
+      width: 100%; height: 100%; overflow: hidden;
       background: var(--bg);
       color: var(--cream);
       font-family: var(--font);
@@ -36,232 +35,810 @@
 
     #deck { position: fixed; inset: 0; }
 
+    /* Progress bar */
     #progress {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: rgba(255,255,255,0.06);
-      z-index: 300;
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 2px; background: rgba(255,255,255,0.06); z-index: 300;
     }
-
     #progress-fill {
-      height: 100%;
-      background: var(--orange);
-      width: 3.85%;
-      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      height: 100%; background: var(--orange);
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1); width: 3.5%;
     }
 
+    /* Counter */
     #counter {
-      position: fixed;
-      right: 32px;
-      bottom: 24px;
-      z-index: 300;
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(180,180,180,0.65);
-      user-select: none;
+      position: fixed; bottom: 24px; right: 32px;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(180,180,180,0.65); z-index: 300; user-select: none;
     }
-
     .slide {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
       justify-content: center;
       padding: 56px 8%;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(12px);
+      opacity: 0; pointer-events: none;
       transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(12px);
       overflow: hidden;
     }
-
-    .slide.active {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateY(0);
-    }
-
+    .slide.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
     .slide > :not(.funnel-visual) {
       position: relative;
       z-index: 1;
     }
 
+    /* Section label */
     .label {
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
       color: var(--orange);
-      margin-bottom: 20px;
+      margin-bottom: 20px; flex-shrink: 0;
     }
-
-    .t-cover {
-      justify-content: center;
-      align-items: flex-start;
-      background:
-        radial-gradient(circle at 86% 18%, rgba(255,82,51,0.12), transparent 28%),
-        linear-gradient(180deg, rgba(255,255,255,0.02), transparent 28%);
-    }
-
+    .t-cover { justify-content: center; align-items: flex-start; padding-bottom: 0; }
     .t-cover .top-label {
-      position: absolute;
-      top: 32px;
-      left: 8%;
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.84);
+      position: absolute; top: 32px; left: 8%;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
     }
-
     .t-cover h1 {
-      font-size: clamp(58px, 6.6vw, 88px);
-      font-weight: 400;
-      letter-spacing: -0.03em;
-      line-height: 0.94;
-      color: #FFFFFF;
-      max-width: 760px;
-      width: min(760px, 100%);
+      font-size: clamp(64px, 7.5vw, 96px);
+      font-weight: 400; letter-spacing: -0.03em; line-height: 1.0;
+      color: #ffffff; max-width: 540px;
       text-wrap: balance;
     }
-
+    .t-cover h1 .orange {
+      color: #ffffff;
+      text-decoration: none;
+    }
     .t-cover .tagline {
-      margin-top: 14px;
-      max-width: 420px;
-      font-size: clamp(18px, 1.85vw, 24px);
-      font-weight: 300;
-      line-height: 1.5;
-      color: var(--muted);
+      margin-top: 12px;
+      font-size: clamp(16px, 1.875vw, 24px); font-weight: 300;
+      color: var(--muted); max-width: 420px; line-height: 1.5;
+      text-wrap: balance;
     }
-
+    /* Vista logo */
     .vista-logo {
-      margin-top: 20px;
-      max-width: 460px;
-      font-size: 15px;
-      line-height: 1.45;
-      color: rgba(255,255,255,0.88);
+      position: absolute; bottom: 32px; left: 8%;
+      display: flex; align-items: center; gap: 8px;
     }
-
     .t-cover .vista-logo {
       position: static;
       margin-top: 20px;
       max-width: 460px;
     }
-
     .vista-logo span {
-      font-family: var(--font);
-      font-size: 15px;
-      font-weight: 300;
-      letter-spacing: -0.01em;
-      color: rgba(255,255,255,0.9);
-      line-height: 1.4;
+      font-family: var(--font); font-size: 15px; font-weight: 300;
+      letter-spacing: -0.01em; color: rgba(255,255,255,0.9); line-height: 1.4;
     }
+    .t-concept h2 {
+      font-size: clamp(2rem, 3.4vw, 3.6rem);
+      font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
+      color: var(--cream); max-width: 700px;
+      margin-bottom: 32px; flex-shrink: 0;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
+    }
+    .t-concept h2 .orange { color: var(--orange); }
+    .t-concept h2 .muted { color: var(--muted); font-weight: 300; }
+    h2 .muted { color: var(--muted); font-weight: 300; }
+    .t-concept ul { list-style: none; max-width: 620px; display: flex; flex-direction: column; gap: 14px; }
+    .t-concept li {
+      display: flex; gap: 14px; align-items: flex-start;
+      font-size: clamp(15px, 1.55vw, 19px); line-height: 1.62;
+      color: rgba(228,226,216,0.85);
+    }
+    .t-concept li .arrow {
+      color: var(--orange); font-size: 12px; margin-top: 4px;
+      flex-shrink: 0; font-family: var(--mono);
+    }
+    .t-concept li strong { color: var(--cream); font-weight: 500; }
+    .t-concept li .dim { color: var(--muted); }
 
-    .t-concept h2,
-    .t-visual h2,
-    .t-compare h2,
-    .t-news h2 {
-      font-size: clamp(1.95rem, 3.2vw, 3.3rem);
+    /* vocab cards */
+    .vocab-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px; max-width: 780px;
+    }
+    .v-card {
+      border: 1px solid var(--border2);
+      border-radius: 2px; padding: 22px 26px;
+      background: rgba(255,255,255,0.02);
+    }
+    .v-term {
+      font-family: var(--mono); font-size: 13px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 8px;
+    }
+    .v-def { font-size: 16px; line-height: 1.68; color: rgba(228,226,216,0.82); }
+    .v-def strong { color: var(--cream); font-weight: 500; }
+
+    .proof-intro {
+      max-width: 760px;
+      margin-bottom: 28px;
+    }
+    .proof-intro h2 {
+      font-size: clamp(2rem, 3.2vw, 3.2rem);
       font-weight: 400;
-      letter-spacing: -0.028em;
+      letter-spacing: -0.03em;
       line-height: 1.12;
       color: var(--cream);
-      max-width: 860px;
-      margin-bottom: 28px;
-      text-wrap: balance;
+      max-width: 760px;
+      margin-bottom: 14px;
     }
-
-    .t-concept h2 .muted,
-    .t-compare h2 .muted,
-    .t-news h2 .muted {
-      color: var(--muted);
-      font-weight: 300;
+    .proof-intro p {
+      max-width: 700px;
+      font-size: 17px;
+      line-height: 1.72;
+      color: rgba(228,226,216,0.76);
     }
-
-    .t-concept h2 .orange,
-    .t-compare h2 .orange,
-    .t-news h2 .orange {
-      color: var(--orange);
-    }
-
-    .story-copy {
+    .proof-grid {
       display: grid;
-      gap: 16px;
-      max-width: 880px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      max-width: 1040px;
+    }
+    .proof-card {
+      border: 1px solid rgba(255,82,51,0.24);
+      background: rgba(255,82,51,0.04);
+      padding: 22px 20px;
+      min-height: 132px;
+    }
+    .proof-stat {
+      font-size: clamp(1.2rem, 1.7vw, 1.55rem);
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: var(--cream);
+      margin-bottom: 10px;
+    }
+    .proof-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 10px;
+    }
+    .proof-meta {
+      font-size: 14px;
+      line-height: 1.55;
+      color: rgba(228,226,216,0.72);
+    }
+
+    /* RICE 4-column */
+    .rice-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 10px; max-width: 760px;
+    }
+    .rice-card {
+      border: 1px solid rgba(255,82,51,0.3);
+      border-radius: 2px; padding: 20px 16px;
+      background: rgba(255,82,51,0.04);
+    }
+    .rice-num {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; color: var(--orange); margin-bottom: 6px;
+    }
+    .rice-letter {
+      font-size: clamp(2rem, 3vw, 2.8rem); font-weight: 300;
+      color: var(--orange); letter-spacing: -0.02em; line-height: 1;
       margin-bottom: 8px;
     }
-
-    .story-copy p {
-      max-width: 760px;
-      font-size: clamp(18px, 1.75vw, 22px);
-      line-height: 1.7;
-      color: rgba(228,226,216,0.86);
+    .rice-title {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 4px;
     }
+    .rice-sub { font-size: 14px; color: var(--muted); line-height: 1.56; }
 
-    .story-copy strong {
-      color: var(--cream);
-      font-weight: 500;
-    }
-
-    .t-concept ul {
-      list-style: none;
-      max-width: 660px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .t-concept li {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-      font-size: clamp(15px, 1.5vw, 19px);
-      line-height: 1.6;
-      color: rgba(228,226,216,0.84);
-    }
-
-    .arrow {
-      flex-shrink: 0;
-      font-family: var(--mono);
-      font-size: 12px;
-      margin-top: 4px;
-      color: var(--orange);
-    }
-
-    .dim { color: var(--muted); }
-
+    /* note box */
     .note {
-      margin-top: 24px;
-      max-width: 620px;
+      margin-top: 24px; max-width: 540px;
       padding: 14px 18px;
       border-left: 2px solid var(--orange);
       background: rgba(255,82,51,0.05);
     }
-
     .note-label {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 4px;
+    }
+    .note-body { font-size: 15px; line-height: 1.6; color: rgba(228,226,216,0.75); }
+    .note-body strong { color: var(--cream); }
+    .t-quote {
+      justify-content: center;
+      border-left: 3px solid var(--orange);
+      padding-left: calc(8% + 28px);
+    }
+    .t-quote blockquote {
+      font-size: clamp(1.4rem, 2.2vw, 2.1rem);
+      font-weight: 300; letter-spacing: -0.02em; line-height: 1.5;
+      color: rgba(228,226,216,0.60); max-width: 680px;
+    }
+    .t-quote blockquote strong { color: var(--cream); font-weight: 400; }
+    .t-quote .next {
+      margin-top: 36px;
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(255,82,51,0.75);
+    }
+    .t-table h2 {
+      font-size: clamp(1.9rem, 2.8vw, 2.9rem);
+      font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
+      color: var(--cream); max-width: 720px;
+      margin-bottom: 28px; flex-shrink: 0;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
+    }
+    .t-table h2 .orange { color: var(--orange); }
+    table {
+      border-collapse: collapse;
+      max-width: 760px; width: 100%;
+      font-size: 15px;
+    }
+    th {
+      text-align: left;
+      font-family: var(--mono); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); padding: 9px 16px;
+      border-bottom: 1px solid var(--border2);
+    }
+    td {
+      padding: 12px 16px;
+      color: rgba(228,226,216,0.78);
+      border-bottom: 1px solid var(--border);
+      line-height: 1.55;
+    }
+    tr:last-child td { border-bottom: none; }
+    td strong { color: var(--cream); font-weight: 500; }
+    td em { font-style: normal; color: rgba(228,226,216,0.78); font-weight: 500; }
+    tr.hi td { background: transparent; }
+    tr.hi td:first-child { border-left: none; padding-left: 16px; }
+    tr.no td { color: #ff6b55; }
+    tr.no td strong { color: #ff4433; font-weight: 600; }
+    .t-caption {
+      margin-top: 14px; max-width: 700px;
+      font-family: var(--mono); font-size: 11px;
+      color: rgba(180,180,180,0.65); letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .t-compare h2 {
+      font-size: clamp(1.9rem, 2.8vw, 2.9rem);
+      font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
+      color: var(--cream); max-width: 700px;
+      margin-bottom: 24px; flex-shrink: 0;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
+    }
+    .t-compare h2 .orange { color: var(--orange); }
+    .cmp-wrap {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2px; max-width: 820px;
+    }
+    .cmp-col {
+      padding: 26px 32px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+    .cmp-col.good { border-color: rgba(255,82,51,0.3); }
+    .cmp-label {
+      font-family: var(--mono); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .cmp-col.bad  .cmp-label { color: rgba(228,226,216,0.65); }
+    .cmp-col.good .cmp-label { color: var(--orange); }
+    .cmp-body { font-size: 16px; line-height: 1.78; color: rgba(228,226,216,0.6); }
+    .cmp-col.bad .cmp-body { font-style: italic; color: rgba(228,226,216,0.75); }
+    .cmp-col.good .cmp-body { color: rgba(228,226,216,0.85); }
+    .cmp-row { display: block; margin-top: 3px; }
+    .cmp-row strong { color: var(--orange); font-weight: 500; font-style: normal; }
+    .t-cue,
+    .t-section {
+      justify-content: center;
+      padding-top: 80px;
+      padding-bottom: 80px;
+    }
+    .t-cue h2 {
+      font-size: clamp(2.3rem, 4.7vw, 4.8rem);
+      font-weight: 400;
+      letter-spacing: -0.045em;
+      line-height: 1.02;
+      color: var(--cream);
+      max-width: 920px;
+      margin-bottom: 18px;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
+    }
+    .t-cue p {
+      max-width: 620px;
+      font-size: 18px;
+      line-height: 1.68;
+      color: rgba(228,226,216,0.72);
+    }
+    .t-section {
+      background:
+        radial-gradient(circle at 18% 22%, rgba(255,82,51,0.12), transparent 30%),
+        radial-gradient(circle at 84% 78%, rgba(255,255,255,0.06), transparent 26%);
+    }
+    .t-section h2 {
+      font-size: clamp(3.2rem, 7vw, 6.3rem);
+      font-weight: 400;
+      letter-spacing: -0.05em;
+      line-height: 0.95;
+      color: var(--cream);
+      max-width: 840px;
+      text-wrap: balance;
+    }
+    .t-section h2 .muted {
+      color: rgba(228,226,216,0.4);
+      font-weight: 300;
+    }
+    .t-visual h2 {
+      font-size: clamp(1.9rem, 2.8vw, 2.9rem);
+      font-weight: 400; letter-spacing: -0.025em; line-height: 1.15;
+      color: var(--cream); max-width: 700px;
+      margin-bottom: 24px; flex-shrink: 0;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
+    }
+    .t-visual h2 .orange { color: var(--orange); }
+    .visual-split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 220px;
+      gap: 24px;
+      align-items: end;
+      width: 100%;
+      max-width: 1040px;
+    }
+    .visual-main {
+      width: 100%;
+    }
+    .qr-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 18px;
+      border: 1px solid rgba(255,82,51,0.24);
+      background: rgba(255,82,51,0.05);
+      border-radius: 8px;
+    }
+    .qr-kicker {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--orange);
+    }
+    .qr-frame {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      background: #ffffff;
+      border-radius: 8px;
+      width: fit-content;
+    }
+    .qr-frame img {
+      width: 164px;
+      height: 164px;
+      display: block;
+      image-rendering: crisp-edges;
+    }
+    .qr-caption {
+      font-size: 15px;
+      line-height: 1.55;
+      color: rgba(228,226,216,0.76);
+    }
+    .qr-caption strong {
+      color: var(--cream);
+      font-weight: 500;
+    }
+    .speaker-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 16px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,82,51,0.28);
+      background: rgba(255,82,51,0.06);
+      color: var(--cream);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .speaker-link:hover {
+      border-color: rgba(255,82,51,0.52);
+      background: rgba(255,82,51,0.12);
+    }
+    .workflow-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px 18px;
+      width: 100%;
+      max-width: 980px;
+    }
+    .workflow-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 142px;
+      padding: 18px 18px 16px;
+      border: 1px solid rgba(228,226,216,0.12);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.025);
+    }
+    .workflow-card.human {
+      border-color: rgba(144,202,249,0.34);
+      background: rgba(144,202,249,0.06);
+    }
+    .workflow-card.ai {
+      border-color: rgba(255,82,51,0.36);
+      background: rgba(255,82,51,0.08);
+    }
+    .workflow-card.empty {
+      opacity: 0;
+      pointer-events: none;
+      min-height: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+    .workflow-step {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .workflow-card.human .workflow-step { color: var(--blue); }
+    .workflow-card.ai .workflow-step { color: var(--orange); }
+    .workflow-title {
+      font-size: 16px;
+      line-height: 1.35;
+      color: var(--cream);
+      max-width: 18ch;
+    }
+    .workflow-role {
+      margin-top: 18px;
+      align-self: flex-start;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    .workflow-card.human .workflow-role {
+      color: var(--blue);
+      background: rgba(144,202,249,0.08);
+      border: 1px solid rgba(144,202,249,0.22);
+    }
+    .workflow-card.ai .workflow-role {
+      color: var(--orange);
+      background: rgba(255,82,51,0.09);
+      border: 1px solid rgba(255,82,51,0.24);
+    }
+    .workflow-note {
+      margin-top: 16px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(180,180,180,0.58);
+    }
+    .funnel-visual {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(90deg, rgba(17,17,17,0.98) 0%, rgba(17,17,17,0.94) 44%, rgba(17,17,17,0.78) 72%, rgba(17,17,17,0.44) 100%),
+        url('deck-assets/frame-110.png');
+      background-repeat: no-repeat;
+      background-size: auto 112%;
+      background-position: 115% center;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid rgba(228,226,216,0.14);
+      background: rgba(255,255,255,0.06);
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.8);
+      margin-bottom: 18px;
+    }
+    .t-cta {
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .t-cta h2 {
+      font-size: clamp(2.4rem, 4.4vw, 4.1rem);
+      font-weight: 400;
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+      color: var(--cream);
+      max-width: 760px;
+      margin-bottom: 18px;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
+    }
+    .t-cta p {
+      max-width: 700px;
+      font-size: clamp(18px, 1.8vw, 22px);
+      line-height: 1.68;
+      color: rgba(228,226,216,0.78);
+    }
+    .cta-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 264px;
+      gap: 28px;
+      align-items: end;
+      width: 100%;
+      max-width: 1000px;
+    }
+    .cta-copy {
+      max-width: 700px;
+    }
+    .cta-qr-card {
+      padding: 18px;
+      border: 1px solid rgba(255,82,51,0.28);
+      background: rgba(255,82,51,0.06);
+      border-radius: 8px;
+    }
+    .cta-qr-label {
       font-family: var(--mono);
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--orange);
-      margin-bottom: 4px;
+      margin-bottom: 14px;
     }
-
-    .note-body {
+    .cta-qr-card .qr-frame img {
+      width: 196px;
+      height: 196px;
+    }
+    .cta-qr-meta {
+      margin-top: 14px;
       font-size: 15px;
-      line-height: 1.6;
+      line-height: 1.55;
       color: rgba(228,226,216,0.76);
     }
+    .cta-qr-meta strong {
+      color: var(--cream);
+      font-weight: 500;
+    }
+    .t-cta-soft {
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .t-cta-soft .pill-badge {
+      margin-bottom: 22px;
+    }
+    .soft-cta-copy {
+      max-width: 960px;
+      font-size: clamp(1.8rem, 3.4vw, 3.15rem);
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      line-height: 1.12;
+      color: rgba(228,226,216,0.7);
+      text-wrap: balance;
+    }
+    .soft-cta-copy strong {
+      color: var(--cream);
+      font-weight: 400;
+    }
+    .soft-cta-copy .orange {
+      color: var(--orange);
+      font-weight: 400;
+    }
+    .cta-hero {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      max-width: 620px;
+    }
+    .cta-enti {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #111111;
+      text-decoration: none;
+      padding: 14px 20px;
+      border-radius: 3px;
+      background: #ffffff;
+      transition: background 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 2px 8px rgba(255,255,255,0.1);
+    }
+    .cta-enti:hover {
+      background: #f5f5f5;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255,255,255,0.15);
+    }
+    .cta-enti img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .cta-fallback {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      color: rgba(228,226,216,0.68);
+    }
+    .cta-fallback a {
+      color: var(--cream);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,82,51,0.28);
+      padding-bottom: 2px;
+    }
+    .cta-fallback a:hover {
+      color: var(--orange);
+      border-color: rgba(255,82,51,0.58);
+    }
+    .cta-split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 210px;
+      gap: 56px;
+      align-items: end;
+      width: 100%;
+      max-width: 1120px;
+    }
+    .cta-side-qr {
+      justify-self: end;
+      width: 100%;
+      max-width: 210px;
+      margin-right: 12px;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,82,51,0.18);
+      background: rgba(255,255,255,0.025);
+    }
+    .cta-side-qr .qr-kicker {
+      margin-bottom: 10px;
+    }
+    .cta-side-qr .qr-frame {
+      padding: 8px;
+    }
+    .cta-side-qr .qr-frame img {
+      width: 148px;
+      height: 148px;
+    }
+    .soft-links {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+      margin-top: 28px;
+      max-width: 940px;
+    }
+    .soft-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 140px;
+      padding: 22px 24px;
+      border-radius: 8px;
+      border: 1px solid rgba(228,226,216,0.12);
+      background: rgba(255,255,255,0.03);
+      color: var(--cream);
+    }
+    .soft-card.large {
+      grid-row: span 2;
+      min-height: 294px;
+      background: linear-gradient(180deg, rgba(255,82,51,0.06) 0%, rgba(255,255,255,0.03) 100%);
+      border-color: rgba(255,82,51,0.18);
+    }
+    .soft-card strong {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      font-weight: 700;
+    }
+    .soft-card span {
+      font-size: 15px;
+      line-height: 1.6;
+      color: rgba(228,226,216,0.74);
+    }
+    .soft-card .soft-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.46);
+    }
+    .soft-card .qr-frame img {
+      width: 176px;
+      height: 176px;
+    }
+    .soft-card.socials {
+      justify-content: flex-start;
+    }
+    .handle-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .handle-list div {
+      font-family: var(--mono);
+      font-size: 15px;
+      letter-spacing: 0.03em;
+      color: var(--cream);
+    }
+    .trust-strip {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      margin-top: 30px;
+    }
+    .trust-strip img {
+      height: 32px;
+      width: auto;
+      opacity: 0.74;
+    }
+    .section-note {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(180,180,180,0.62);
+      margin-bottom: 14px;
+    }
 
+    /* Slide images */
+    .slide-img {
+      max-width: 100%; height: auto;
+      border-radius: 2px;
+      border: 1px solid var(--border2);
+    }
+    .slide-img.right-float {
+      position: absolute;
+      right: 6vw; top: 50%;
+      transform: translateY(-50%);
+      max-width: 38vw; max-height: 60vh;
+      object-fit: contain;
+      border: none;
+      opacity: 0.92;
+    }
     .org-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -289,906 +866,24 @@
       line-height: 1.68;
       color: rgba(228,226,216,0.82);
     }
-
-    .split-grid,
-    .demo-grid,
-    .news-grid {
-      display: grid;
-      gap: 16px;
-      width: 100%;
-      max-width: 1040px;
-    }
-
-    .split-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      align-items: stretch;
-    }
-
-    .split-card,
-    .demo-card,
-    .news-card,
-    .cmp-col,
-    .mini-card {
-      display: flex;
-      flex-direction: column;
-      border: 1px solid var(--border-strong);
-      background: rgba(255,255,255,0.02);
-      border-radius: 2px;
-    }
-
-    .split-card {
-      padding: 24px 28px;
-      min-height: 252px;
-    }
-
-    .card-kicker,
-    .news-date {
-      display: inline-block;
-      margin-bottom: 12px;
-      padding: 9px 12px;
-      border: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(228,226,216,0.72);
-    }
-
-    .split-card h3,
-    .demo-card h3,
-    .news-card h3 {
-      font-size: clamp(1.65rem, 2.1vw, 2.05rem);
-      font-weight: 400;
-      letter-spacing: -0.03em;
-      line-height: 1.14;
-      color: var(--cream);
-      margin-bottom: 14px;
-    }
-
-    .split-card ul,
-    .demo-card ul {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .split-card li,
-    .demo-card li {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      font-size: 16px;
-      line-height: 1.58;
-      color: rgba(228,226,216,0.82);
-    }
-
-    .split-card li::before,
-    .demo-card li::before {
-      content: "\2022";
-      flex-shrink: 0;
-      color: var(--orange);
-      font-family: var(--mono);
-      font-size: 14px;
-      line-height: 1.45;
-    }
-
-    .bottom-line {
-      margin-top: 22px;
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(228,226,216,0.52);
-    }
-
-    .demo-note {
-      margin-top: 18px;
-      max-width: 860px;
-      font-family: var(--mono);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(228,226,216,0.42);
-    }
-
-    .demo-context-note {
-      max-width: 940px;
-    }
-
-    .t-section {
-      justify-content: center;
-      background:
-        radial-gradient(circle at 18% 24%, rgba(255,82,51,0.12), transparent 28%),
-        radial-gradient(circle at 84% 76%, rgba(255,255,255,0.05), transparent 24%);
-    }
-
-    .t-section h2 {
-      font-size: clamp(3.2rem, 6.9vw, 6.2rem);
-      font-weight: 400;
-      letter-spacing: -0.05em;
-      line-height: 0.95;
-      color: var(--cream);
-      max-width: 860px;
-      text-wrap: balance;
-    }
-
-    .t-section h2 .muted {
-      color: rgba(228,226,216,0.42);
-      font-weight: 300;
-    }
-
-    .visual-wrap {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 300px;
-      gap: 28px;
-      width: 100%;
-      max-width: 1080px;
-      align-items: end;
-    }
-
-    .visual-main img {
-      width: 100%;
-      max-height: 490px;
-      object-fit: contain;
-      display: block;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
-    }
-
-    .visual-side {
-      padding: 18px 20px;
-      border: 1px solid rgba(255,82,51,0.24);
-      background: rgba(255,82,51,0.05);
-      border-radius: 4px;
-    }
-
-    .visual-side .note-label { margin-bottom: 10px; }
-
-    .visual-side p {
-      font-size: 16px;
-      line-height: 1.62;
-      color: rgba(228,226,216,0.76);
-    }
-
-    .visual-side ul {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .visual-side li {
-      position: relative;
-      padding-left: 16px;
-      font-size: 15px;
-      line-height: 1.45;
-      color: rgba(228,226,216,0.8);
-    }
-
-    .visual-side li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.5em;
-      width: 5px;
-      height: 5px;
-      border-radius: 999px;
-      background: var(--orange);
-    }
-
-    .visual-side li strong {
-      color: var(--cream);
-      font-weight: 500;
-    }
-
-    .t-compare .cmp-wrap {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      width: 100%;
-      max-width: 980px;
-    }
-
-    .cmp-col {
-      padding: 24px 28px;
-      border: 1px solid var(--border-strong);
-      background: rgba(255,255,255,0.02);
-      min-height: 360px;
-    }
-
-    .cmp-label {
-      display: inline-block;
-      margin-bottom: 18px;
-      padding: 9px 12px;
-      border: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(228,226,216,0.72);
-    }
-
-    .cmp-title {
-      font-size: 26px;
-      font-weight: 400;
-      letter-spacing: -0.03em;
-      line-height: 1.14;
-      color: var(--cream);
-      margin-bottom: 16px;
-    }
-
-    .cmp-col ul {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .cmp-col li {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      font-size: 16px;
-      line-height: 1.58;
-      color: rgba(228,226,216,0.82);
-    }
-
-    .cmp-col li::before {
-      content: "\2022";
-      flex-shrink: 0;
-      color: var(--orange);
-      font-family: var(--mono);
-      font-size: 14px;
-      line-height: 1.45;
-    }
-
-    .cmp-foot {
-      margin-top: 20px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(228,226,216,0.52);
-    }
-
-    .demo-card {
-      padding: 22px 24px;
-      min-height: 220px;
-    }
-
-    .demo-grid {
-      grid-template-columns: 280px minmax(0, 1fr);
-      align-items: stretch;
-    }
-
-    .prompt-box {
-      margin-top: 14px;
-      padding: 16px 18px;
-      border-left: 2px solid var(--orange);
-      background: rgba(255,82,51,0.05);
-      font-size: 16px;
-      line-height: 1.6;
-      color: rgba(228,226,216,0.78);
-    }
-
-    .prompt-box strong {
-      color: var(--cream);
-      font-weight: 500;
-    }
-
-    .demo-card p,
-    .news-card p {
-      font-size: 16px;
-      line-height: 1.6;
-      color: rgba(228,226,216,0.78);
-    }
-
-    .three-up {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      width: 100%;
-      max-width: 1040px;
-      align-items: stretch;
-    }
-
-    .one-up {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 14px;
-      width: 100%;
-      max-width: 760px;
-      margin: 0;
-      align-items: stretch;
-    }
-
-    .two-up {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      width: 100%;
-      max-width: 1040px;
-      align-items: stretch;
-    }
-
-    .mini-card {
-      padding: 18px 20px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
-      min-height: 180px;
-    }
-
-    .mini-card h3 {
-      font-size: 22px;
-      font-weight: 400;
-      letter-spacing: -0.03em;
-      line-height: 1.18;
-      color: var(--cream);
-      margin-bottom: 12px;
-    }
-
-    .mini-card p {
-      font-size: 15px;
-      line-height: 1.58;
-      color: rgba(228,226,216,0.76);
-    }
-
-    .t-concept#s22 h2 {
-      max-width: 760px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: center;
-    }
-
-    .t-concept#s22 .mini-card {
-      min-height: 0;
-    }
-
-    .t-concept#s22 {
-      justify-content: center;
-      align-items: center;
-      padding-top: 56px;
-    }
-
-    .t-concept#s22 .one-up {
-      margin: 0 auto;
-    }
-
-    .mini-card .card-kicker {
-      margin-bottom: 14px;
-    }
-
-    .t-news .news-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      align-items: stretch;
-    }
-
-    .news-card {
-      padding: 18px 20px;
-      min-height: 248px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .news-card h3 {
-      font-size: 21px;
-      margin-bottom: 12px;
-    }
-
-    .news-source {
-      margin-top: auto;
-      padding-top: 14px;
-      font-family: var(--mono);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(228,226,216,0.44);
-    }
-
-    #s24 h2 {
-      font-size: clamp(2.55rem, 3.45vw, 3.35rem);
-      line-height: 0.98;
-      max-width: 860px;
-      margin-bottom: 22px;
-    }
-
-    #s24 .news-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-      max-width: 1180px;
-      width: 100%;
-    }
-
-    #s24 .news-card {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      min-height: 0;
-      padding: 18px;
-      align-items: stretch;
-    }
-
-    #s24 .news-meta {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    #s24 .news-date {
-      margin-bottom: 0;
-    }
-
-    #s24 .news-tag {
-      font-family: var(--mono);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.10em;
-      text-transform: uppercase;
-      color: rgba(228,226,216,0.52);
-    }
-
-    #s24 .news-body {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    #s24 .news-date {
-      font-size: 10px;
-      padding: 8px 10px;
-      letter-spacing: 0.10em;
-    }
-
-    #s24 .news-card h3 {
-      font-size: 19px;
-      line-height: 1.15;
-      margin-bottom: 5px;
-    }
-
-    #s24 .news-card p {
-      max-width: none;
-      font-size: 14px;
-      line-height: 1.36;
-    }
-
-    #s24 .news-foot {
-      margin-top: 10px;
-      font-family: var(--mono);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(228,226,216,0.44);
-    }
-
-    .qa-list {
-      list-style: none;
-      max-width: 880px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .qa-list li {
-      padding: 16px 18px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.02);
-      font-size: 18px;
-      line-height: 1.55;
-      color: rgba(228,226,216,0.84);
-    }
-
-    .cta-copy {
-      max-width: 840px;
-      font-size: clamp(1.9rem, 3.6vw, 3.3rem);
-      font-weight: 300;
-      letter-spacing: -0.04em;
-      line-height: 1.12;
-      color: rgba(228,226,216,0.82);
-    }
-
-    .cta-copy strong {
-      color: var(--cream);
-      font-weight: 400;
-    }
-
-    .cta-copy .orange {
-      color: var(--orange);
-      font-weight: 400;
-    }
-
-    .funnel-visual {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      background-image:
-        linear-gradient(90deg, rgba(17,17,17,0.98) 0%, rgba(17,17,17,0.94) 44%, rgba(17,17,17,0.78) 72%, rgba(17,17,17,0.44) 100%),
-        url('deck-assets/frame-110.png');
-      background-repeat: no-repeat;
-      background-size: auto 112%;
-      background-position: 115% center;
-      opacity: 0.7;
-      pointer-events: none;
-    }
-
-    #s26 .funnel-visual,
-    #s27 .funnel-visual {
-      opacity: 0.92;
-    }
-
-
-
-    .pill-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      border: 1px solid rgba(228,226,216,0.14);
-      background: rgba(255,255,255,0.06);
-      border-radius: 999px;
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: rgba(228,226,216,0.8);
-      margin-bottom: 18px;
-    }
-
-    .t-cta {
-      justify-content: center;
-      align-items: flex-start;
-    }
-
-    .t-cta h2 {
-      font-size: clamp(2.4rem, 4.4vw, 4.1rem);
-      font-weight: 500;
-      letter-spacing: -0.04em;
-      line-height: 1.02;
-      color: #ffffff;
-      max-width: 760px;
-      margin-bottom: 18px;
-      text-wrap: balance;
-      orphans: 2;
-      widows: 2;
-    }
-
-    .t-cta p {
-      max-width: 700px;
-      font-size: clamp(18px, 1.8vw, 22px);
-      line-height: 1.68;
-      font-weight: 400;
-      color: rgba(255,255,255,0.98);
-    }
-
-    .cta-split {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 210px;
-      gap: 56px;
-      align-items: end;
-      width: 100%;
-      max-width: 1120px;
-    }
-
-    .cta-hero {
-      margin-top: 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 14px;
-      max-width: 620px;
-    }
-
-    .cta-enti {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #111111;
-      text-decoration: none;
-      padding: 14px 20px;
-      border-radius: 3px;
-      background: #ffffff;
-      transition: background 0.2s ease, transform 0.2s ease;
-      box-shadow: 0 2px 8px rgba(255,255,255,0.1);
-    }
-
-    .cta-enti:hover {
-      background: #f5f5f5;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(255,255,255,0.15);
-    }
-
-    .cta-enti img {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .cta-fallback {
-      font-family: var(--mono);
-      font-size: 12px;
-      letter-spacing: 0.04em;
-      color: rgba(228,226,216,0.82);
-    }
-
-    .cta-fallback a {
-      color: var(--cream);
-      text-decoration: none;
-      border-bottom: 1px solid rgba(255,82,51,0.28);
-      padding-bottom: 2px;
-    }
-
-    .cta-fallback a:hover {
-      color: var(--orange);
-      border-color: rgba(255,82,51,0.58);
-    }
-
-    .cta-side-qr {
-      justify-self: end;
-      width: 100%;
-      max-width: 210px;
-      margin-right: 12px;
-      padding: 16px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,82,51,0.24);
-      background: rgba(255,255,255,0.04);
-    }
-
-    .qr-kicker {
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(180,180,180,0.58);
-      margin-bottom: 10px;
-    }
-
-    .qr-frame {
-      background: #ffffff;
-      padding: 10px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .qr-frame img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    .cta-side-qr .qr-frame {
-      padding: 8px;
-    }
-
-    .cta-side-qr .qr-frame img {
-      width: 148px;
-      height: 148px;
-    }
-
-    .soft-links {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 14px;
-      margin-top: 28px;
-      max-width: 940px;
-    }
-
-    .soft-card {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 14px;
-      min-height: 140px;
-      padding: 22px 24px;
-      border-radius: 8px;
-      border: 1px solid rgba(228,226,216,0.24);
-      background: rgba(255,255,255,0.1);
-      color: var(--cream);
-    }
-
-    .soft-card.large {
-      grid-row: span 2;
-      min-height: 294px;
-      background: linear-gradient(180deg, rgba(255,82,51,0.16) 0%, rgba(255,255,255,0.1) 100%);
-      border-color: rgba(255,82,51,0.36);
-    }
-
-    .soft-card strong {
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--orange);
-      font-weight: 700;
-    }
-
-    .soft-card span {
-      font-size: 15px;
-      line-height: 1.6;
-      color: rgba(255,255,255,0.98);
-    }
-
-    .soft-card .soft-meta {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.82);
-    }
-
-    .soft-card-action {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: fit-content;
-      min-height: 38px;
-      padding: 0 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,82,51,0.28);
-      background: rgba(255,82,51,0.08);
-      color: var(--cream);
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      text-decoration: none;
-      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-    }
-
-    .soft-card-action:hover {
-      background: rgba(255,82,51,0.14);
-      border-color: rgba(255,82,51,0.5);
-      color: #ffffff;
-    }
-
-    .soft-card .qr-frame img {
-      width: 176px;
-      height: 176px;
-    }
-
-    .soft-card.socials {
-      justify-content: flex-start;
-    }
-
-    .handle-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .handle-list a {
-      width: fit-content;
-      font-family: var(--mono);
-      font-size: 15px;
-      letter-spacing: 0.03em;
-      color: #ffffff;
-      text-decoration: none;
-      border-bottom: 1px solid transparent;
-    }
-
-    .t-concept#s27 h2 {
-      color: #ffffff;
-      text-shadow: 0 1px 0 rgba(0,0,0,0.18);
-    }
-
-    #s26 .label,
-    #s26 .pill-badge,
-    #s26 .cta-fallback,
-    #s26 .cta-copy,
-    #s27 .label,
-    #s27 .soft-card span,
-    #s27 .soft-card .soft-meta,
-    #s27 .handle-list a {
-      color: rgba(255,255,255,0.94);
-    }
-
-    #s26 .cta-copy,
-    #s26 .t-cta p {
-      color: #ffffff;
-    }
-
-    #s27 .soft-card {
-      border-color: rgba(255,255,255,0.22);
-      background: rgba(255,255,255,0.12);
-    }
-
-    #s27 .soft-card.large {
-      background: linear-gradient(180deg, rgba(255,82,51,0.18) 0%, rgba(255,255,255,0.12) 100%);
-      border-color: rgba(255,82,51,0.42);
-    }
-
-    #s27 .soft-card strong {
-      color: rgba(255,146,118,0.96);
-    }
-
-    #s27 .soft-card span {
-      color: rgba(255,255,255,0.98);
-    }
-
-    #s27 .soft-card .soft-meta {
-      color: rgba(255,255,255,0.78);
-    }
-
-    .handle-list a:hover {
-      color: #ffffff;
-      border-color: rgba(228,226,216,0.42);
-    }
-
-    @media (max-width: 1200px) {
-      .slide {
-        padding-top: 72px;
-        padding-bottom: 72px;
-        overflow-y: auto;
-      }
-
-      .split-grid,
-      .demo-grid,
-      .visual-wrap,
-      .t-compare .cmp-wrap,
-      .three-up,
-      .two-up,
-      .t-news .news-grid,
-      .cta-split,
-      .soft-links {
-        grid-template-columns: 1fr;
-      }
-
-      .soft-card.large {
-        grid-row: auto;
-      }
-
-      .cta-side-qr {
-        justify-self: start;
-        margin-right: 0;
-      }
-
-      #s24 .news-card {
-        grid-template-columns: 1fr;
-        gap: 14px;
-      }
-
-      #s24 .news-grid {
-        grid-template-columns: 1fr;
-      }
-
-      html, body { overflow: auto; }
-      #deck { position: relative; min-height: 100vh; }
-    }
   </style>
 </head>
 <body>
+
 <div id="progress"><div id="progress-fill"></div></div>
-<div id="counter">01 / 27</div>
+<div id="counter">01 / 29</div>
 
 <div id="deck">
-  <section class="slide t-cover active" id="s1">
+
+  <div class="slide t-cover active" id="s1">
     <img src="deck-assets/vista-mark-light.svg" alt="Vista mark" style="position:absolute;height:128vh;left:24%;top:-10vh;pointer-events:none;display:block;opacity:0.9;">
     <div class="top-label">Arco x Vista</div>
-    <h1>Claude Cowork<br>y Claude Code</h1>
-    <p class="tagline">De chat a ejecuci&oacute;n: c&oacute;mo delegar trabajo real en escritorio y terminal sin perder criterio.</p>
-    <div class="vista-logo">Workshop &middot; 90 min &middot; en espa&ntilde;ol</div>
-  </section>
+    <h1>IA 101</h1>
+    <p class="tagline">Como usar herramientas de IA con criterio en el trabajo, el aprendizaje y la creacion.</p>
+    <div class="vista-logo"><span>Sesion introductoria &middot; practica &middot; accesible</span></div>
+  </div>
 
-  <section class="slide t-concept" id="s2">
+  <div class="slide t-concept" id="s2">
     <div class="label">Quienes somos</div>
     <h2>Experiencia en tecnologia.<br><span class="muted">De estrategia a producto.</span></h2>
 
@@ -1203,432 +898,319 @@
       </div>
     </div>
 
-  </section>
+  </div>
 
-  <section class="slide t-concept" id="s3">
-    <div class="label">00 &middot; Mapa</div>
-    <h2>La IA ya no solo responde.<br><span class="muted">Tambi&eacute;n ejecuta.</span></h2>
-    <div class="story-copy">
-      <p>Hoy vamos de la conversaci&oacute;n al trabajo real.</p>
-    </div>
-    <ul style="max-width:780px">
-      <li><span class="arrow">&#8594;</span><span><strong>Chat vs Agent</strong><span class="dim"> del chat a la ejecuci&oacute;n</span></span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Agents 101</strong><span class="dim"> autonom&iacute;a, herramientas y persistencia</span></span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Seguridad en agentes</strong><span class="dim"> l&iacute;mites, permisos y prompt injection</span></span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Claude Cowork</strong><span class="dim"> archivos, documentos y escritorio</span></span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Claude Code</strong><span class="dim"> repos, tests y loop de trabajo</span></span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Updates</strong><span class="dim"> qu&eacute; cambi&oacute; y por qu&eacute; importa</span></span></li>
-    </ul>
-  </section>
-
-  <section class="slide t-concept" id="s4">
-    <div class="label">01 &middot; Chat vs Agent</div>
-    <h2>La narrativa del cambio</h2>
-    <div class="story-copy">
-      <p><strong>2023-2024:</strong> La IA era una ventana de chat. Le ped&iacute;as "analiza estos 50 PDFs", recib&iacute;as un p&aacute;rrafo explic&aacute;ndote lo que encontr&oacute;, y luego <strong>t&uacute;</strong> abr&iacute;as cada archivo, copiabas datos a Excel, formateabas. La IA opinaba; t&uacute; ejecutabas manualmente.</p>
-      <p><strong>2025-2026:</strong> La IA es un agente. Le pides lo mismo, pero ahora &eacute;l abre tus carpetas, lee los PDFs, crea el Excel con f&oacute;rmulas y gr&aacute;ficos, y lo guarda en tu escritorio listo para enviar. T&uacute; revisas el resultado; &eacute;l ejecut&oacute; el proceso.</p>
-    </div>
-    <div class="note">
-      <div class="note-label">La transici&oacute;n es de informaci&oacute;n a operaci&oacute;n</div>
-      <div class="note-body">En chat act&uacute;a como un consultor que te dice c&oacute;mo hacerlo. Un agente trabaja como un pasante usando tu m&aacute;quina mientras tomas caf&eacute;.</div>
-    </div>
-  </section>
-  <section class="slide t-compare" id="s5">
-    <div class="label">01 &middot; Chat vs Agent</div>
-    <h2>Dos maneras de trabajar</h2>
-    <div class="cmp-wrap">
-      <article class="cmp-col">
-        <div class="cmp-label">Modo consultor</div>
-        <div class="cmp-title">Chat</div>
-        <ul>
-          <li>Te explica el camino.</li>
-          <li>Devuelve contexto, no ejecuci&oacute;n.</li>
-          <li>Sirve para pensar, aprender o decidir.</li>
-          <li>El siguiente paso lo da una persona.</li>
-        </ul>
-        <div class="cmp-foot">Entrega principal: contexto</div>
-      </article>
-      <article class="cmp-col">
-        <div class="cmp-label">Modo operador</div>
-        <div class="cmp-title">Agente</div>
-        <ul>
-          <li>Recibe una meta y arma un plan.</li>
-          <li>Usa herramientas y produce cambios reales.</li>
-          <li>Pide permiso cuando el riesgo sube.</li>
-          <li>Sirve para delegar trabajo repetible.</li>
-        </ul>
-        <div class="cmp-foot">Entrega principal: trabajo terminado</div>
-      </article>
-    </div>
-  </section>
-
-  <section class="slide t-section" id="s6">
-    <div class="label">02 &middot; Agents 101</div>
-    <h2>Qu&eacute; convierte a algo en un agente<br><span class="muted">de verdad</span></h2>
-  </section>
-
-  <section class="slide t-concept" id="s7">
-    <div class="label">02 &middot; Agents 101</div>
-    <h2>Tres propiedades obligatorias.</h2>
+  <div class="slide t-concept" id="s3">
+    <div class="label">Que veremos hoy</div>
+    <h2>La IA ya esta cambiando como trabajamos, aprendemos y&nbsp;creamos.</h2>
     <ul>
-      <li><span class="arrow">&#8594;</span><span><strong>Autonom&iacute;a:</strong> t&uacute; defines la meta; el agente arma y ejecuta el plan.</span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Tool use:</strong> trabaja con archivos, apps o servicios. No solo con palabras.</span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Persistencia:</strong> mantiene el hilo durante tareas largas y no se cae al archivo tres.</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Conceptos base:</strong><span class="dim"> modelos, tokens, contexto y limites reales</span></span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Herramientas:</strong><span class="dim"> cual usar segun la tarea que tienes enfrente</span></span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Prompting:</strong><span class="dim"> RICE y habitos simples para pedir mejor</span></span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Workflows y seguridad:</strong><span class="dim"> donde delegar y que no compartir</span></span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Demos:</strong><span class="dim"> casos concretos para llevarte ideas aplicables</span></span></li>
     </ul>
-    <div class="note">
-      <div class="note-label">Lectura simple</div>
-      <div class="note-body">Si no ejecuta, no usa herramientas o no sostiene contexto, seguimos hablando de chat avanzado.</div>
-    </div>
-  </section>
+  </div>
 
-  <section class="slide t-visual" id="s8">
-    <div class="label">02 &middot; Agents 101</div>
-    <h2>La IA cada vez aguanta m&aacute;s trabajo.</h2>
-    <div class="visual-wrap">
-      <div class="visual-main">
-        <img src="deck-assets/metr-llm-time-horizon.png" alt="Grafica de METR sobre horizonte de trabajo de modelos" />
+  <div class="slide t-section" id="s4">
+    <div class="label">01 &middot; Conceptos base</div>
+    <h2>Conceptos base<br><span class="muted">Que debes dominar</span></h2>
+  </div>
+
+  <div class="slide t-concept" id="s5">
+    <div class="label">01 &middot; Conceptos base</div>
+    <h2 style="max-width:760px">Cuatro conceptos para no&nbsp;perderte</h2>
+    <div class="vocab-grid">
+      <div class="v-card">
+        <div class="v-term">Modelo</div>
+        <div class="v-def">El motor que genera la respuesta. Distintos modelos priorizan velocidad, calidad o especializacion.</div>
       </div>
-      <aside class="visual-side">
-        <div class="note-label">C&oacute;mo leerla</div>
-        <ul>
-          <li><strong>Casos de uso:</strong> te ayuda a ver cu&aacute;ndo basta con chat y cu&aacute;ndo ya conviene delegar.</li>
-          <li><strong>Expectativas:</strong> m&aacute;s horizonte no es magia; todav&iacute;a necesita pasos, chequeos y supervisi&oacute;n.</li>
-          <li><strong>Timing:</strong> explica por qu&eacute; flujos que fallaban antes hoy s&iacute; pueden servir.</li>
-          <li><strong>Riesgo:</strong> m&aacute;s capacidad tambi&eacute;n vuelve el error m&aacute;s caro.</li>
-        </ul>
-      </aside>
+      <div class="v-card">
+        <div class="v-term">Prompt</div>
+        <div class="v-def">Lo que le pides. Instrucciones, contexto, restricciones y el tipo de resultado que esperas.</div>
+      </div>
+      <div class="v-card">
+        <div class="v-term">Token</div>
+        <div class="v-def">Pedacitos de texto que el modelo procesa. Afectan costo, velocidad y cuanta informacion cabe.</div>
+      </div>
+      <div class="v-card">
+        <div class="v-term">Contexto</div>
+        <div class="v-def">La informacion que el modelo tiene a mano para resolver tu tarea en ese momento.</div>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <section class="slide t-compare" id="s9">
-    <div class="label">02 &middot; Agents 101</div>
-    <h2>Dos herramientas: <span class="orange">nativas</span> y <span class="orange">externas</span></h2>
+  <div class="slide t-concept" id="s6">
+    <img src="deck-assets/neural-network-llm.png" alt="Diagrama de red neuronal" class="slide-img right-float">
+    <div class="label">01 &middot; Conceptos base</div>
+    <h2>Un LLM predice texto.<br><span class="muted">No piensa como tu.</span></h2>
+    <ul>
+      <li><span class="arrow">&#8594;</span><span>LLM significa <strong>Large Language Model</strong></span></li>
+      <li><span class="arrow">&#8594;</span><span>Fue entrenado con grandes cantidades de texto para adivinar que viene despues</span></li>
+      <li><span class="arrow">&#8594;</span><span>Reconoce patrones. No entiende el mundo como una persona</span></li>
+      <li><span class="arrow">&#8594;</span><span>Por eso puede sonar brillante y equivocarse con mucha seguridad</span></li>
+      <li><span class="arrow">&#8594;</span><span>Piensalo como un asistente nuevo: rapido, util y sin contexto de tu vida</span></li>
+    </ul>
+  </div>
+
+  <div class="slide t-visual" id="s7">
+    <div class="label">01 &middot; Conceptos base</div>
+    <h2>Asi ve tu texto un&nbsp;modelo</h2>
+    <div style="max-width:860px;width:100%;">
+      <img src="deck-assets/tokenizer-screenshot.png" alt="Captura de tokenizer con colores por token" class="slide-img" style="max-height:400px;width:auto;">
+      <div style="margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(180,180,180,0.68);">Cada color = un token</div>
+      <div style="margin-top:14px;max-width:700px;padding:14px 16px;border:1px solid rgba(255,82,51,0.22);background:rgba(255,82,51,0.04);font-size:14px;line-height:1.6;color:rgba(228,226,216,0.76);">
+        Dato curioso: toda Harry Potter en ingles son aprox. 1.44M tokens.
+      </div>
+      <a class="speaker-link" href="https://platform.openai.com/tokenizer" target="_blank">Abrir tokenizer</a>
+    </div>
+  </div>
+
+  <div class="slide t-section" id="s8">
+    <div class="label">02 &middot; Herramientas</div>
+    <h2>Herramientas<br><span class="muted">La adecuada para cada tarea</span></h2>
+  </div>
+
+  <div class="slide t-table" id="s9">
+    <div class="label">02 &middot; Herramientas</div>
+    <h2 style="max-width:760px">No todas las herramientas hacen&nbsp;lo&nbsp;mismo</h2>
+    <table>
+      <thead><tr><th>Tipo</th><th>Sirve para</th><th>Ejemplos</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Chat generalista</strong></td><td>pensar, explicar, resumir, redactar</td><td>ChatGPT, Claude, Gemini</td></tr>
+        <tr><td><strong>Busqueda con fuentes</strong></td><td>investigar temas actuales y comparar informacion</td><td>Grok, Perplexity</td></tr>
+        <tr><td><strong>Imagen</strong></td><td>conceptos visuales, moodboards, ideas creativas</td><td>Midjourney, Nano Banana (Google)</td></tr>
+        <tr><td><strong>Aprendizaje asistido</strong></td><td>estudiar, resumir, explicar y escuchar contenido</td><td>NotebookLM</td></tr>
+      </tbody>
+    </table>
+    <p class="t-caption">Piensa en familias de herramientas primero. La marca viene despues.</p>
+  </div>
+
+  <div class="slide t-concept" id="s10">
+    <div class="label">02 &middot; Herramientas</div>
+    <h2>Empieza por la tarea.<br><span class="muted">Luego elige la herramienta.</span></h2>
+    <ul>
+      <li><span class="arrow">&#8594;</span><span>Si necesitas informacion actual, usa una herramienta con busqueda y fuentes visibles</span></li>
+      <li><span class="arrow">&#8594;</span><span>Si necesitas pensar, resumir o redactar, empieza por un chat generalista</span></li>
+      <li><span class="arrow">&#8594;</span><span>Si necesitas aprender desde un material, usa una herramienta pensada para estudiar</span></li>
+      <li><span class="arrow">&#8594;</span><span>Define primero la salida que quieres: resumen, tabla, draft, lista o decision</span></li>
+    </ul>
+    <div class="note">
+      <div class="note-label">Regla simple</div>
+      <div class="note-body">No te cases con una herramienta. <strong>Compara dos</strong> cuando el resultado importe.</div>
+    </div>
+  </div>
+
+  <div class="slide t-concept" id="s11">
+    <div class="label">02 &middot; Herramientas</div>
+    <h2 style="max-width:760px">La IA es util, pero tiene limites&nbsp;reales</h2>
+    <ul>
+      <li><span class="arrow">&#8594;</span><span>Puede inventar datos, fuentes o detalles cuando no sabe</span></li>
+      <li><span class="arrow">&#8594;</span><span>No siempre tiene informacion actualizada si no puede buscar en la web</span></li>
+      <li><span class="arrow">&#8594;</span><span>No conoce tu contexto personal o laboral a menos que se lo des</span></li>
+      <li><span class="arrow">&#8594;</span><span>Sirve excelente para explorar, resumir y redactar; no para confiar ciegamente</span></li>
+    </ul>
+  </div>
+
+  <div class="slide t-section" id="s12">
+    <div class="label">03 &middot; Prompting</div>
+    <h2>Prompting<br><span class="muted">Como estructurar mejores prompts</span></h2>
+  </div>
+
+  <div class="slide t-concept" id="s13">
+    <div class="label">03 &middot; Prompting</div>
+    <h2>Promptear bien es dar contexto.<br><span class="muted">No usar palabras magicas.</span></h2>
+    <ul>
+      <li><span class="arrow">&#8594;</span><span>Una instruccion vaga produce una respuesta vaga</span></li>
+      <li><span class="arrow">&#8594;</span><span>La IA responde mejor cuando entiende objetivo, audiencia y restricciones</span></li>
+      <li><span class="arrow">&#8594;</span><span>Tratalo como un brief para alguien inteligente que no conoce tu caso</span></li>
+      <li><span class="arrow">&#8594;</span><span>Una linea extra de contexto puede ahorrarte varios intentos malos</span></li>
+    </ul>
+  </div>
+
+  <div class="slide t-concept" id="s14">
+    <div class="label">03 &middot; Prompting</div>
+    <h2 style="max-width:none;font-size:clamp(1.45rem,2.2vw,2.6rem);white-space:nowrap;">RICE: una formula simple para promptear&nbsp;mejor</h2>
+    <div class="rice-grid">
+      <div class="rice-card">
+        <div class="rice-num">01</div>
+        <div class="rice-letter">R</div>
+        <div class="rice-title">Rol</div>
+        <div class="rice-sub">Desde que perspectiva debe responder</div>
+      </div>
+      <div class="rice-card">
+        <div class="rice-num">02</div>
+        <div class="rice-letter">I</div>
+        <div class="rice-title">Instruccion</div>
+        <div class="rice-sub">Que necesitas exactamente</div>
+      </div>
+      <div class="rice-card">
+        <div class="rice-num">03</div>
+        <div class="rice-letter">C</div>
+        <div class="rice-title">Contexto</div>
+        <div class="rice-sub">Que debe saber para hacerlo bien</div>
+      </div>
+      <div class="rice-card">
+        <div class="rice-num">04</div>
+        <div class="rice-letter">E</div>
+        <div class="rice-title">Ejemplo</div>
+        <div class="rice-sub">Como quieres recibir la respuesta</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide t-compare" id="s15">
+    <div class="label">03 &middot; Prompting</div>
+    <h2><span class="muted">Misma tarea.</span><br>Resultado totalmente distinto.</h2>
     <div class="cmp-wrap">
-      <article class="cmp-col">
-        <div class="cmp-label">Nativa / local</div>
-        <div class="cmp-title">Trabaja dentro de tu entorno.</div>
-        <ul>
-          <li>Lee, crea y modifica archivos.</li>
-          <li>Opera sobre carpetas que t&uacute; autorizas.</li>
-          <li>Viene dentro del producto.</li>
-        </ul>
-      </article>
-      <article class="cmp-col">
-        <div class="cmp-label">Externa / conectada</div>
-        <div class="cmp-title">Usa herramientas fuera de tu entorno.</div>
-        <ul>
-          <li>Puede llamar APIs, CLI tools o MCPs.</li>
-          <li>Le permite hablar con GitHub, Slack o Drive.</li>
-          <li>Ampl&iacute;a lo que puede hacer fuera de tu carpeta.</li>
-        </ul>
-      </article>
+      <div class="cmp-col bad">
+        <div class="cmp-label">Vago</div>
+        <div class="cmp-body">"Hazme un email para mover una reunion"</div>
+      </div>
+      <div class="cmp-col good">
+        <div class="cmp-label">Con RICE</div>
+        <div class="cmp-body">
+          <span class="cmp-row"><strong>Rol:</strong> asistente que escribe claro y cordial</span>
+          <span class="cmp-row"><strong>Instruccion:</strong> redacta un email breve para mover una reunion</span>
+          <span class="cmp-row"><strong>Contexto:</strong> ya estaba confirmada; quiero proponer jueves a las 11am</span>
+          <span class="cmp-row"><strong>Ejemplo:</strong> asunto + 5 lineas maximo + tono amable</span>
+        </div>
+      </div>
     </div>
-  </section>
+  </div>
 
-  <section class="slide t-concept" id="s10">
-    <div class="label">02 &middot; Skills</div>
-    <h2>Skills: un m&eacute;todo repetible,<br><span class="muted">empaquetado para que Claude lo repita bien.</span></h2>
-    <div class="story-copy">
-      <p>Un Skill es un paquete reutilizable de instrucciones, archivos y criterios para una tarea que se repite. Sirve para que Claude haga ese trabajo de la misma manera cada vez.</p>
-    </div>
-    <ul style="max-width:780px">
-      <li><span class="arrow">&#8594;</span><span><strong>Con <code>skill-creator</code>, que es un Skill para crear Skills,</strong><span class="dim"> conviertes ese proceso en uno nuevo sin arrancar de cero.</span></span></li>
-    </ul>
-    <div class="note">
-      <div class="note-label">Regla pr&aacute;ctica</div>
-      <div class="note-body">Si tu equipo repite el mismo formato, el mismo checklist o el mismo reporte, esa es la candidata perfecta para una Skill.</div>
-    </div>
-  </section>
-
-  <section class="slide t-section" id="s11">
-    <div class="label">03 &middot; Seguridad</div>
-    <h2>Antes de delegar trabajo<br><span class="muted">hay que entender l&iacute;mites</span></h2>
-  </section>
-
-  <section class="slide t-concept" id="s12">
-    <div class="label">03 &middot; Seguridad</div>
-    <h2>Seguridad: qu&eacute; puede hacer<br><span class="muted">y qu&eacute; todav&iacute;a no conviene soltarle</span></h2>
+  <div class="slide t-concept" id="s16">
+    <div class="label">03 &middot; Prompting</div>
+    <h2><span class="muted">Cinco habitos</span> que mejoran cualquier&nbsp;resultado</h2>
     <ul>
-      <li><span class="arrow">&#8594;</span><span><strong>Todav&iacute;a est&aacute; en preview:</strong> sirve para probar y acelerar trabajo, no para procesos sensibles sin supervisi&oacute;n.</span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Escritura real:</strong> puede cambiar archivos dentro de las carpetas que le abras.</span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Datos sensibles:</strong> datos personales, credenciales y material regulado siguen fuera.</span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Prompt injection:</strong> un PDF o una web pueden intentar desviar al agente.</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Se especifico.</strong> Mejor breve y claro que largo y ambiguo</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Divide tareas complejas.</strong> Primero esquema, luego detalle</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Pide formato.</strong> Tabla, bullets, pasos, resumen, email</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Itera.</strong> Mejorar en dos turnos casi siempre gana</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Verifica.</strong> Nombres, numeros, fechas y fuentes antes de usar</span></li>
     </ul>
-  </section>
+  </div>
 
-  <section class="slide t-concept" id="s13">
-    <div class="label">03 &middot; Seguridad</div>
-    <h2>Antes de continuar: tres controles.</h2>
+  <div class="slide t-cta-soft" id="s17">
+    <div class="label">03 &middot; Prompting</div>
+    <div class="pill-badge">Prompt Pack PDF</div>
+    <div class="soft-cta-copy">Preparamos un <strong>paquete de prompts</strong> basico para que puedan <span class="orange">experimentar</span> despues del taller.</div>
+  </div>
+
+  <div class="slide t-section" id="s18">
+    <div class="label">04 &middot; Workflows</div>
+    <h2>Workflows</h2>
+  </div>
+
+  <div class="slide t-concept" id="s19">
+    <div class="label">04 &middot; Workflows</div>
+    <h2>Delega la friccion.<br><span class="muted">Conserva el criterio.</span></h2>
     <ul>
-      <li><span class="arrow">&#8594;</span><span><strong>Lee el plan de acci&oacute;n</strong> antes de continuar.</span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Valida el scope:</strong> carpetas, webs y archivos que piensa tocar.</span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Empieza en sandbox:</strong> primero carpeta de prueba, luego trabajo real.</span></li>
+      <li><span class="arrow">&#8594;</span><span>La IA puede proponer, ordenar, resumir y redactar</span></li>
+      <li><span class="arrow">&#8594;</span><span>Tu decides objetivo, contexto y la version final</span></li>
+      <li><span class="arrow">&#8594;</span><span>Si el error cuesta caro, revisa manualmente antes de usar</span></li>
+      <li><span class="arrow">&#8594;</span><span>Human-in-the-loop no es desconfianza: es buen diseno de trabajo</span></li>
     </ul>
-    <div class="note">
-      <div class="note-label">Regla de oro</div>
-      <div class="note-body">Si no lo publicar&iacute;as en p&uacute;blico, no lo pongas en un agente sin controles.</div>
+  </div>
+
+  <div class="slide t-visual" id="s20">
+    <div class="label">04 &middot; Workflow ejemplo</div>
+    <h2>Un flujo simple:<br><span class="muted">investigar</span> <span class="orange">&rarr;</span> <span class="muted">resumir</span> <span class="orange">&rarr;</span> <span class="muted">draft</span> <span class="orange">&rarr;</span>&nbsp;<span class="muted">revisar</span></h2>
+    <div class="workflow-grid">
+      <div class="workflow-card human">
+        <div>
+          <div class="workflow-step">Paso 1</div>
+          <div class="workflow-title">Definir la pregunta</div>
+        </div>
+        <div class="workflow-role">Humano</div>
+      </div>
+      <div class="workflow-card ai">
+        <div>
+          <div class="workflow-step">Paso 2</div>
+          <div class="workflow-title">Buscar y reunir material</div>
+        </div>
+        <div class="workflow-role">IA</div>
+      </div>
+      <div class="workflow-card ai">
+        <div>
+          <div class="workflow-step">Paso 3</div>
+          <div class="workflow-title">Resumir hallazgos</div>
+        </div>
+        <div class="workflow-role">IA</div>
+      </div>
+      <div class="workflow-card ai">
+        <div>
+          <div class="workflow-step">Paso 4</div>
+          <div class="workflow-title">Armar borrador</div>
+        </div>
+        <div class="workflow-role">IA</div>
+      </div>
+      <div class="workflow-card human">
+        <div>
+          <div class="workflow-step">Paso 5</div>
+          <div class="workflow-title">Verificar, editar y decidir</div>
+        </div>
+        <div class="workflow-role">Humano</div>
+      </div>
+      <div class="workflow-card empty" aria-hidden="true"></div>
     </div>
-  </section>
+    <div class="workflow-note">Se lee de izquierda a derecha. La IA acelera el medio del flujo; el criterio vuelve a ti al final.</div>
+  </div>
 
-  <section class="slide t-section" id="s14">
-    <div class="label">04 &middot; Claude Cowork</div>
-    <h2>Claude Cowork<br><span class="muted">el agente de escritorio</span></h2>
-  </section>
+  <div class="slide t-section" id="s21">
+    <div class="label">05 &middot; Seguridad</div>
+    <h2>Seguridad</h2>
+  </div>
 
-  <section class="slide t-concept" id="s15">
-    <div class="label">04 &middot; Claude Cowork</div>
-    <h2>Claude Cowork no es otro chat.<br><span class="muted">Trabaja dentro de tu escritorio.</span></h2>
+  <div class="slide t-concept" id="s22">
+    <div class="label">05 &middot; Seguridad</div>
+    <h2><span class="muted">Si no lo pondrias en un email abierto,</span> no lo pegues sin&nbsp;pensar</h2>
     <ul>
-      <li><span class="arrow">&#8594;</span><span>Recibe una meta, no una secuencia de mensajes.</span></li>
-      <li><span class="arrow">&#8594;</span><span>Opera sobre archivos y documentos reales.</span></li>
-      <li><span class="arrow">&#8594;</span><span>Pasa por aprobaciones cuando la acci&oacute;n tiene m&aacute;s impacto.</span></li>
-      <li><span class="arrow">&#8594;</span><span>Puede repartir trabajo grande entre subagentes.</span></li>
+      <li><span class="arrow">&#8594;</span><span>Evita pegar datos sensibles, credenciales, contratos o informacion privada</span></li>
+      <li><span class="arrow">&#8594;</span><span>Anonimiza nombres y datos cuando solo necesitas trabajar la estructura</span></li>
+      <li><span class="arrow">&#8594;</span><span>Asume que lo que subes puede quedar guardado por el proveedor</span></li>
+      <li><span class="arrow">&#8594;</span><span>Si trabajas con informacion delicada, sigue la politica de tu equipo</span></li>
     </ul>
-    <div class="note">
-      <div class="note-label">Arquitectura r&aacute;pida</div>
-      <div class="note-body">Recibe la meta, reparte trabajo cuando hace falta y te pide OK cuando el riesgo sube.</div>
-    </div>
-  </section>
+  </div>
 
-  <section class="slide t-concept" id="s16">
-    <div class="label">04 &middot; Claude Cowork</div>
-    <h2>Demo A: encontrar un Airbnb.</h2>
-    <div class="demo-grid">
-      <article class="demo-card">
-        <div class="card-kicker">Setup</div>
-        <h3>B&uacute;squeda en Palermo</h3>
-        <ul>
-          <li>2 personas, del viernes 10 al domingo 12 de abril.</li>
-          <li>Presupuesto total: $200-$300 USD.</li>
-          <li>Aire acondicionado, cama Queen o King y cerca del Subte.</li>
-        </ul>
-      </article>
-      <article class="demo-card">
-        <div class="card-kicker">Prompt</div>
-        <h3>C&oacute;mo decide</h3>
-        <div class="prompt-box"><strong>Prompt:</strong> Act&uacute;a como mi experto en Airbnb especializado en Buenos Aires. Usa el plugin de Claude en Chrome, filtra por precios m&aacute;s baratos y buenas rese&ntilde;as. Recomi&eacute;ndame la mejor opci&oacute;n &uacute;nica para Palermo y haz un an&aacute;lisis breve de pros y contras frente a las dem&aacute;s.</div>
-        <div class="bottom-line">Entregar: una sola ganadora con an&aacute;lisis breve</div>
-      </article>
-    </div>
-    <div class="note demo-context-note">
-      <div class="note-label">Contexto ficticio</div>
-      <div class="note-body">La b&uacute;squeda simula una decisi&oacute;n real de viaje: comparar opciones, filtrar restricciones y defender una &uacute;nica recomendaci&oacute;n.</div>
-    </div>
-  </section>
+  <div class="slide t-section" id="s23">
+    <div class="label">06 &middot; Demos</div>
+    <h2>Demos</h2>
+  </div>
 
-  <section class="slide t-concept" id="s17">
-    <div class="label">04 &middot; Claude Cowork</div>
-    <h2>Demo B: ordenar Descargas.</h2>
-    <div class="demo-grid">
-      <article class="demo-card">
-        <div class="card-kicker">Setup</div>
-        <h3>Carpeta ca&oacute;tica</h3>
-        <ul>
-          <li>15 archivos mezclados entre facturas, im&aacute;genes y PDFs.</li>
-          <li>Nombres rotos tipo final_v2 y scan_001.</li>
-          <li>Cero convenci&oacute;n de orden operativo.</li>
-        </ul>
-      </article>
-      <article class="demo-card">
-        <div class="card-kicker">Prompt</div>
-        <h3>C&oacute;mo lo ordena</h3>
-        <div class="prompt-box"><strong>Prompt:</strong> Organiza esta carpeta ca&oacute;tica de 15 archivos. Renombra con un criterio consistente, crea un &iacute;ndice en Excel con nombre original, nuevo nombre y fecha, y deja una nota breve de qu&eacute; cambi&oacute;.</div>
-        <div class="bottom-line">Mostrar: renombres consistentes, &iacute;ndice y nota de cambio</div>
-      </article>
-    </div>
-    <div class="note demo-context-note">
-      <div class="note-label">Contexto ficticio</div>
-      <div class="note-body">Estas demos est&aacute;n basadas en Cosecha Urbana SRL, empresa ficticia del workshop. Fuente: workshop-2-demos/README.md.</div>
-    </div>
-  </section>
+  <div class="slide t-cue" id="s24">
+    <div class="label">06 &middot; Demos</div>
+    <h2>Aprendizaje asistido con&nbsp;NotebookLM</h2>
+    <p>Explorar un tema, resumir fuentes y convertir PDFs o videos en material util.</p>
+  </div>
 
-  <section class="slide t-concept" id="s18">
-    <div class="label">04 &middot; Claude Cowork</div>
-    <h2>Demo C: s&iacute;ntesis de investigaci&oacute;n.</h2>
-    <div class="demo-grid">
-      <article class="demo-card">
-        <div class="card-kicker">Setup</div>
-        <h3>7 documentos de research</h3>
-        <ul>
-          <li>Hallazgos repartidos entre varios documentos.</li>
-          <li>Informaci&oacute;n cualitativa y datos comparables.</li>
-          <li>Necesidad de una lectura ejecutiva clara.</li>
-        </ul>
-      </article>
-      <article class="demo-card">
-        <div class="card-kicker">Prompt</div>
-        <h3>C&oacute;mo lo sintetiza</h3>
-        <div class="prompt-box"><strong>Prompt:</strong> Lee estos 7 documentos y genera un informe ejecutivo con resumen, hallazgos por documento y tabla comparativa.</div>
-        <div class="bottom-line">Mostrar: informe ejecutivo y tabla comparativa</div>
-      </article>
-    </div>
-    <div class="note demo-context-note">
-      <div class="note-label">Contexto ficticio</div>
-      <div class="note-body">Estas demos est&aacute;n basadas en Cosecha Urbana SRL, empresa ficticia del workshop. Fuente: workshop-2-demos/README.md.</div>
-    </div>
-  </section>
+  <div class="slide t-cue" id="s25">
+    <div class="label">06 &middot; Demos</div>
+    <h2>Aprovecha mejor tu asistente</h2>
+    <p>Usa Proyectos para crear sesiones personalizadas, con instrucciones, archivos y tareas repetibles para tu trabajo real.</p>
+  </div>
 
-  <section class="slide t-concept" id="s19">
-    <div class="label">04 &middot; Claude Cowork</div>
-    <h2>Demo D: tarea programada.</h2>
-    <div class="demo-grid">
-      <article class="demo-card">
-        <div class="card-kicker">Caso</div>
-        <h3>Trabajo recurrente</h3>
-        <ul>
-          <li>8 archivos de facturas pendientes.</li>
-          <li>El output es siempre parecido.</li>
-          <li>Lo valioso es que quede programado.</li>
-        </ul>
-      </article>
-      <article class="demo-card">
-        <div class="card-kicker">Prompt</div>
-        <h3>C&oacute;mo lo programa</h3>
-        <div class="prompt-box"><strong>Prompt:</strong> Cada lunes a las 9:00 a. m., revisa esta carpeta de 8 facturas pendientes y genera un resumen semanal para Contabilidad, con CSV de estado y regla de programaci&oacute;n.</div>
-        <div class="bottom-line">Mostrar: resumen semanal, CSV de estado y regla de scheduling</div>
-      </article>
-    </div>
-    <div class="note demo-context-note">
-      <div class="note-label">Contexto ficticio</div>
-      <div class="note-body">Estas demos est&aacute;n basadas en Cosecha Urbana SRL, empresa ficticia del workshop. Fuente: workshop-2-demos/README.md.</div>
-    </div>
-  </section>
+  <div class="slide t-cue" id="s26">
+    <div class="label">06 &middot; Demos</div>
+    <h2>Trabajo sobre archivos con&nbsp;Claude Cowork</h2>
+    <p>Le das una carpeta y un objetivo; organiza materiales, analiza contenido y prepara entregables.</p>
+  </div>
 
-  <section class="slide t-section" id="s20">
-    <div class="label">05 &middot; Claude Code</div>
-    <h2>Claude Code<br><span class="muted">el agente de terminal</span></h2>
-  </section>
+  <div class="slide t-cue" id="s27">
+    <div class="label">06 &middot; Demos</div>
+    <h2>OpenClaw como asistente&nbsp;personal</h2>
+    <p>Vive en tus chats, recuerda contexto y ejecuta tareas por ti.</p>
+  </div>
 
-  <section class="slide t-compare" id="s21">
-    <div class="label">05 &middot; Claude Code</div>
-    <h2>Cowork y Claude Code comparten la l&oacute;gica de agente,<br><span class="muted">pero no hacen el mismo trabajo.</span></h2>
-    <div class="cmp-wrap">
-      <article class="cmp-col">
-        <div class="cmp-label">Cowork</div>
-        <div class="cmp-title">Escritorio</div>
-        <ul>
-          <li>Documentos, carpetas y archivos de usuario.</li>
-          <li>Flujos de oficina y operaciones manuales.</li>
-          <li>Resultado visible dentro de la app.</li>
-        </ul>
-      </article>
-      <article class="cmp-col">
-        <div class="cmp-label">Claude Code</div>
-        <div class="cmp-title">Terminal</div>
-        <ul>
-          <li>Repositorios, builds, tests y scripts.</li>
-          <li>Trabajo t&eacute;cnico m&aacute;s profundo.</li>
-          <li>Resultado visible en el codebase y el loop.</li>
-        </ul>
-      </article>
-    </div>
-  </section>
-
-  <section class="slide t-concept" id="s22">
-    <div class="label">05 &middot; Claude Code</div>
-    <h2>Claude Code sirve cuando el trabajo vive en un repo.<br><span class="muted">Inspecciona, cambia, prueba y corrige.</span></h2>
-    <ul>
-      <li><span class="arrow">&#8594;</span><span><strong>Agent teams:</strong> varias instancias trabajando en paralelo sin pisarse.</span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>AutoMemory:</strong> recuerda convenciones del repo y del equipo.</span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Loop build-test-fix:</strong> inspecciona, cambia, prueba y corrige.</span></li>
-      <li><span class="arrow">&#8594;</span><span><strong>Humano en el loop:</strong> el criterio sigue siendo tuyo.</span></li>
-    </ul>
-  </section>
-
-  <section class="slide t-concept" id="s23">
-    <div class="label">05 &middot; Claude Code</div>
-    <h2>Claude Code se entiende mejor con demos.<br><span class="muted">Crearemos una landing page minimalista.</span></h2>
-    <div class="one-up">
-      <article class="mini-card">
-        <div class="card-kicker">Demo Code</div>
-        <h3>Landing page minimal</h3>
-        <p>Una landing sobria y responsive, con CTA claro e interacci&oacute;n real que s&iacute; convierte.</p>
-      </article>
-    </div>
-  </section>
-
-  <section class="slide t-news" id="s24">
-    <div class="label">06 &middot; Updates</div>
-    <h2>Claude no para de sacar actualizaciones.</h2>
-    <div class="news-grid">
-      <article class="news-card">
-        <div class="news-meta">
-          <div class="news-date">17 feb 2026</div>
-          <div class="news-tag">Cowork + Code</div>
-        </div>
-        <div class="news-body">
-          <h3>Sonnet 4.6 aguanta tareas m&aacute;s largas.</h3>
-          <p>Mejora coding, planning y computer use. Adem&aacute;s abre la beta de 1M tokens para contextos enormes.</p>
-        </div>
-      </article>
-      <article class="news-card">
-        <div class="news-meta">
-          <div class="news-date">24 feb 2026</div>
-          <div class="news-tag">Cowork</div>
-        </div>
-        <div class="news-body">
-          <h3>Cowork ya se puede extender mejor.</h3>
-          <p>Plugins, connectors y skills quedan mejor organizados, con m&aacute;s control para equipos y admins.</p>
-        </div>
-      </article>
-      <article class="news-card">
-        <div class="news-meta">
-          <div class="news-date">25 feb 2026</div>
-          <div class="news-tag">Cowork</div>
-        </div>
-        <div class="news-body">
-          <h3>Cowork ya corre tareas programadas.</h3>
-          <p>Puedes dejarle un trabajo recurrente o lanzarlo on-demand sin rehacer el prompt cada vez.</p>
-        </div>
-      </article>
-      <article class="news-card">
-        <div class="news-meta">
-          <div class="news-date">17 mar 2026</div>
-          <div class="news-tag">Cowork</div>
-        </div>
-        <div class="news-body">
-          <h3>Cowork ya sigue el hilo desde el m&oacute;vil.</h3>
-          <p>Ves el mismo trabajo desde iPhone o Android mientras sigue corriendo en tu desktop.</p>
-        </div>
-      </article>
-      <article class="news-card">
-        <div class="news-meta">
-          <div class="news-date">23 mar 2026</div>
-          <div class="news-tag">Cowork + Code</div>
-        </div>
-        <div class="news-body">
-          <h3>Dispatch ya puede mover la compu por ti.</h3>
-          <p>Con computer use puede abrir archivos, usar herramientas y navegar la pantalla para avanzar tareas.</p>
-        </div>
-      </article>
-      <article class="news-card">
-        <div class="news-meta">
-          <div class="news-date">24 mar 2026</div>
-          <div class="news-tag">Code</div>
-        </div>
-        <div class="news-body">
-          <h3>Auto mode reduce el ida y vuelta.</h3>
-          <p>Aprueba acciones seguras solo y frena las riesgosas. As&iacute; delegas m&aacute;s sin soltar el control.</p>
-        </div>
-      </article>
-    </div>
-    <div class="news-foot">Fuentes oficiales: Anthropic release notes + Claude Code docs</div>
-  </section>
-
-  <section class="slide t-concept" id="s25">
-    <div class="label">07 &middot; Cierre</div>
-    <h2>Ahora sabes cu&aacute;ndo pasar de chat a agente.<br><span class="muted">Siempre con l&iacute;mites, permisos y revisi&oacute;n.</span></h2>
-  </section>
-
-  <section class="slide t-cta" id="s26">
+  <div class="slide t-cta" id="s28">
     <div class="funnel-visual"></div>
-    <div class="label">07 &middot; Cierre</div>
-    <div class="pill-badge">Briefing inicial &middot; 15 min</div>
+    <div class="label">07 &middot; Siguiente paso</div>
+    <div class="pill-badge">Briefing inicial &middot; sin compromiso</div>
     <div class="cta-split">
       <div>
         <h2>Trae tu equipo.<br><span class="muted">Nosotros lo capacitamos.</span></h2>
-        <p style="color:#ffffff;">
-          Capacitamos equipos para usar IA con criterio, aterrizar casos de uso y convertir ideas en practicas reales.
+        <p style="color:var(--cream);">
+          Capacitamos equipos a usar la IA con criterio, ayudandolos a aterrizar casos de uso y convertir ideas en practicas que el equipo realmente use en su dia a dia.
         </p>
         <div class="cta-hero">
           <a class="cta-enti" href="https://cal.com/isaac-vista/15min" target="_blank">
@@ -1646,12 +1228,12 @@
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <section class="slide t-concept" id="s27">
+  <div class="slide t-concept" id="s29">
     <div class="funnel-visual"></div>
-    <div class="label">07 &middot; Cierre</div>
-    <h2 style="max-width:900px">Sigamos en contacto</h2>
+    <div class="label">08 &middot; Cierre</div>
+    <h2 style="max-width:900px">Siguenos de cerca</h2>
     <div class="soft-links">
       <div class="soft-card large">
         <strong>Comunidad</strong>
@@ -1659,30 +1241,29 @@
         <div class="qr-frame">
           <img src="deck-assets/whatsapp-community-qr.png" alt="QR para unirse a la comunidad de WhatsApp">
         </div>
-        <a class="soft-card-action" href="https://chat.whatsapp.com/lIMIpXfesUQJgLoOcOoJCR?mode=gi_t" target="_blank" rel="noopener noreferrer">Entrar al grupo</a>
         <div class="soft-meta">WhatsApp &middot; espanol &middot; acceso rapido</div>
       </div>
       <div class="soft-card">
         <strong>Emergent Stack</strong>
-        <span>Nuestro newsletter de tecnologia e IA, escrito en ingles.</span>
-        <a class="soft-card-action" href="https://ethlatam.substack.com/" target="_blank" rel="noopener noreferrer">Abrir newsletter</a>
+        <span>Nuestro newsletter de tecnologia e IA, escrito en ingles para seguir de cerca lo que viene.</span>
         <div class="soft-meta">Newsletter &middot; in English</div>
       </div>
       <div class="soft-card socials">
         <strong>Socials</strong>
         <span>Sigue a Vista y Arco en X para recursos, noticias y proximos eventos.</span>
         <div class="handle-list">
-          <a href="https://x.com/vistawtf" target="_blank" rel="noopener noreferrer">@vistawtf</a>
-          <a href="https://x.com/arco_lat" target="_blank" rel="noopener noreferrer">@arco_lat</a>
+          <div>@vistawtf</div>
+          <div>@arco_lat</div>
         </div>
         <div class="soft-meta">X &middot; updates &middot; comunidad</div>
       </div>
     </div>
-  </section>
+  </div>
+
 </div>
 
 <script>
-  const N = 27;
+  const N = 29;
   let cur = 1;
 
   function go(n) {
@@ -1691,28 +1272,20 @@
     cur = n;
     document.getElementById('s' + cur).classList.add('active');
     document.getElementById('progress-fill').style.width = (cur / N * 100) + '%';
-    const p = (x) => String(x).padStart(2, '0');
+    const p = x => String(x).padStart(2, '0');
     document.getElementById('counter').textContent = p(cur) + ' / ' + p(N);
   }
 
-  document.addEventListener('keydown', (e) => {
+  document.addEventListener('keydown', e => {
     const fwd = ['ArrowRight', ' ', 'ArrowDown', 'PageDown'];
     const bwd = ['ArrowLeft', 'Backspace', 'ArrowUp', 'PageUp'];
-    if (fwd.includes(e.key)) {
-      e.preventDefault();
-      go(cur + 1);
-    } else if (bwd.includes(e.key)) {
-      e.preventDefault();
-      go(cur - 1);
-    } else if (e.key === 'Home') {
-      go(1);
-    } else if (e.key === 'End') {
-      go(N);
-    }
+    if (fwd.includes(e.key)) { e.preventDefault(); go(cur + 1); }
+    else if (bwd.includes(e.key)) { e.preventDefault(); go(cur - 1); }
+    else if (e.key === 'Home') go(1);
+    else if (e.key === 'End') go(N);
   });
 
   go(1);
 </script>
 </body>
 </html>
-
