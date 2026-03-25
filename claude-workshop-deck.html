@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Cowork + Claude Code | Arco x Vista</title>
+  <link rel="icon" href="favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #111111;
+      --cream: #E4E2D8;
+      --muted: #9B9B9B;
+      --dim: #5F5F5F;
+      --orange: #FF5233;
+      --surface: #1A1A1A;
+      --border: rgba(228,226,216,0.10);
+      --border-strong: rgba(228,226,216,0.18);
+      --font: 'Geist', system-ui, sans-serif;
+      --mono: 'Geist Mono', 'SF Mono', 'Monaco', monospace;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--cream);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #deck { position: fixed; inset: 0; }
+
+    #progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: rgba(255,255,255,0.06);
+      z-index: 300;
+    }
+
+    #progress-fill {
+      height: 100%;
+      background: var(--orange);
+      width: 3.85%;
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #counter {
+      position: fixed;
+      right: 32px;
+      bottom: 24px;
+      z-index: 300;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(180,180,180,0.65);
+      user-select: none;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 56px 8%;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .slide > :not(.funnel-visual) {
+      position: relative;
+      z-index: 1;
+    }
+
+    .label {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 20px;
+    }
+
+    .t-cover {
+      justify-content: center;
+      align-items: flex-start;
+      background:
+        radial-gradient(circle at 86% 18%, rgba(255,82,51,0.12), transparent 28%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), transparent 28%);
+    }
+
+    .t-cover .top-label {
+      position: absolute;
+      top: 32px;
+      left: 8%;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.84);
+    }
+
+    .t-cover h1 {
+      font-size: clamp(58px, 6.6vw, 88px);
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      line-height: 0.94;
+      color: #FFFFFF;
+      max-width: 760px;
+      width: min(760px, 100%);
+      text-wrap: balance;
+    }
+
+    .t-cover .tagline {
+      margin-top: 14px;
+      max-width: 420px;
+      font-size: clamp(18px, 1.85vw, 24px);
+      font-weight: 300;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .vista-logo {
+      margin-top: 20px;
+      max-width: 460px;
+      font-size: 15px;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.88);
+    }
+
+    .t-cover .vista-logo {
+      position: static;
+      margin-top: 20px;
+      max-width: 460px;
+    }
+
+    .vista-logo span {
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.4;
+    }
+
+    .t-concept h2,
+    .t-visual h2,
+    .t-compare h2,
+    .t-news h2 {
+      font-size: clamp(1.95rem, 3.2vw, 3.3rem);
+      font-weight: 400;
+      letter-spacing: -0.028em;
+      line-height: 1.12;
+      color: var(--cream);
+      max-width: 860px;
+      margin-bottom: 28px;
+      text-wrap: balance;
+    }
+
+    .t-concept h2 .muted,
+    .t-compare h2 .muted,
+    .t-news h2 .muted {
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .t-concept h2 .orange,
+    .t-compare h2 .orange,
+    .t-news h2 .orange {
+      color: var(--orange);
+    }
+
+    .story-copy {
+      display: grid;
+      gap: 16px;
+      max-width: 880px;
+      margin-bottom: 8px;
+    }
+
+    .story-copy p {
+      max-width: 760px;
+      font-size: clamp(18px, 1.75vw, 22px);
+      line-height: 1.7;
+      color: rgba(228,226,216,0.86);
+    }
+
+    .story-copy strong {
+      color: var(--cream);
+      font-weight: 500;
+    }
+
+    .t-concept ul {
+      list-style: none;
+      max-width: 660px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .t-concept li {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      font-size: clamp(15px, 1.5vw, 19px);
+      line-height: 1.6;
+      color: rgba(228,226,216,0.84);
+    }
+
+    .arrow {
+      flex-shrink: 0;
+      font-family: var(--mono);
+      font-size: 12px;
+      margin-top: 4px;
+      color: var(--orange);
+    }
+
+    .dim { color: var(--muted); }
+
+    .note {
+      margin-top: 24px;
+      max-width: 620px;
+      padding: 14px 18px;
+      border-left: 2px solid var(--orange);
+      background: rgba(255,82,51,0.05);
+    }
+
+    .note-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 4px;
+    }
+
+    .note-body {
+      font-size: 15px;
+      line-height: 1.6;
+      color: rgba(228,226,216,0.76);
+    }
+
+    .org-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 820px;
+      margin-top: 28px;
+    }
+    .org-card {
+      padding: 28px 30px;
+      border: 1px solid var(--border2);
+      background: rgba(255,255,255,0.02);
+      border-radius: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .org-logo {
+      height: 28px;
+      width: auto;
+      object-fit: contain;
+      object-position: left;
+    }
+    .org-desc {
+      font-size: 16px;
+      line-height: 1.68;
+      color: rgba(228,226,216,0.82);
+    }
+
+    .split-grid,
+    .demo-grid,
+    .news-grid {
+      display: grid;
+      gap: 16px;
+      width: 100%;
+      max-width: 1040px;
+    }
+
+    .split-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+    }
+
+    .split-card,
+    .demo-card,
+    .news-card,
+    .cmp-col,
+    .mini-card {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border-strong);
+      background: rgba(255,255,255,0.02);
+      border-radius: 2px;
+    }
+
+    .split-card {
+      padding: 24px 28px;
+      min-height: 252px;
+    }
+
+    .card-kicker,
+    .news-date {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.72);
+    }
+
+    .split-card h3,
+    .demo-card h3,
+    .news-card h3 {
+      font-size: clamp(1.65rem, 2.1vw, 2.05rem);
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      line-height: 1.14;
+      color: var(--cream);
+      margin-bottom: 14px;
+    }
+
+    .split-card ul,
+    .demo-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .split-card li,
+    .demo-card li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 16px;
+      line-height: 1.58;
+      color: rgba(228,226,216,0.82);
+    }
+
+    .split-card li::before,
+    .demo-card li::before {
+      content: "\2022";
+      flex-shrink: 0;
+      color: var(--orange);
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .bottom-line {
+      margin-top: 22px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.52);
+    }
+
+    .demo-note {
+      margin-top: 18px;
+      max-width: 860px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.42);
+    }
+
+    .demo-context-note {
+      max-width: 940px;
+    }
+
+    .t-section {
+      justify-content: center;
+      background:
+        radial-gradient(circle at 18% 24%, rgba(255,82,51,0.12), transparent 28%),
+        radial-gradient(circle at 84% 76%, rgba(255,255,255,0.05), transparent 24%);
+    }
+
+    .t-section h2 {
+      font-size: clamp(3.2rem, 6.9vw, 6.2rem);
+      font-weight: 400;
+      letter-spacing: -0.05em;
+      line-height: 0.95;
+      color: var(--cream);
+      max-width: 860px;
+      text-wrap: balance;
+    }
+
+    .t-section h2 .muted {
+      color: rgba(228,226,216,0.42);
+      font-weight: 300;
+    }
+
+    .visual-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 28px;
+      width: 100%;
+      max-width: 1080px;
+      align-items: end;
+    }
+
+    .visual-main img {
+      width: 100%;
+      max-height: 490px;
+      object-fit: contain;
+      display: block;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .visual-side {
+      padding: 18px 20px;
+      border: 1px solid rgba(255,82,51,0.24);
+      background: rgba(255,82,51,0.05);
+      border-radius: 4px;
+    }
+
+    .visual-side .note-label { margin-bottom: 10px; }
+
+    .visual-side p {
+      font-size: 16px;
+      line-height: 1.62;
+      color: rgba(228,226,216,0.76);
+    }
+
+    .visual-side ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .visual-side li {
+      position: relative;
+      padding-left: 16px;
+      font-size: 15px;
+      line-height: 1.45;
+      color: rgba(228,226,216,0.8);
+    }
+
+    .visual-side li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.5em;
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--orange);
+    }
+
+    .visual-side li strong {
+      color: var(--cream);
+      font-weight: 500;
+    }
+
+    .t-compare .cmp-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      width: 100%;
+      max-width: 980px;
+    }
+
+    .cmp-col {
+      padding: 24px 28px;
+      border: 1px solid var(--border-strong);
+      background: rgba(255,255,255,0.02);
+      min-height: 360px;
+    }
+
+    .cmp-label {
+      display: inline-block;
+      margin-bottom: 18px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.72);
+    }
+
+    .cmp-title {
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      line-height: 1.14;
+      color: var(--cream);
+      margin-bottom: 16px;
+    }
+
+    .cmp-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .cmp-col li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 16px;
+      line-height: 1.58;
+      color: rgba(228,226,216,0.82);
+    }
+
+    .cmp-col li::before {
+      content: "\2022";
+      flex-shrink: 0;
+      color: var(--orange);
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .cmp-foot {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.52);
+    }
+
+    .demo-card {
+      padding: 22px 24px;
+      min-height: 220px;
+    }
+
+    .demo-grid {
+      grid-template-columns: 280px minmax(0, 1fr);
+      align-items: stretch;
+    }
+
+    .prompt-box {
+      margin-top: 14px;
+      padding: 16px 18px;
+      border-left: 2px solid var(--orange);
+      background: rgba(255,82,51,0.05);
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(228,226,216,0.78);
+    }
+
+    .prompt-box strong {
+      color: var(--cream);
+      font-weight: 500;
+    }
+
+    .demo-card p,
+    .news-card p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(228,226,216,0.78);
+    }
+
+    .three-up {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      width: 100%;
+      max-width: 1040px;
+      align-items: stretch;
+    }
+
+    .one-up {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+      width: 100%;
+      max-width: 760px;
+      margin: 0;
+      align-items: stretch;
+    }
+
+    .two-up {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      width: 100%;
+      max-width: 1040px;
+      align-items: stretch;
+    }
+
+    .mini-card {
+      padding: 18px 20px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      min-height: 180px;
+    }
+
+    .mini-card h3 {
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      line-height: 1.18;
+      color: var(--cream);
+      margin-bottom: 12px;
+    }
+
+    .mini-card p {
+      font-size: 15px;
+      line-height: 1.58;
+      color: rgba(228,226,216,0.76);
+    }
+
+    .t-concept#s22 h2 {
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    .t-concept#s22 .mini-card {
+      min-height: 0;
+    }
+
+    .t-concept#s22 {
+      justify-content: center;
+      align-items: center;
+      padding-top: 56px;
+    }
+
+    .t-concept#s22 .one-up {
+      margin: 0 auto;
+    }
+
+    .mini-card .card-kicker {
+      margin-bottom: 14px;
+    }
+
+    .t-news .news-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: stretch;
+    }
+
+    .news-card {
+      padding: 18px 20px;
+      min-height: 248px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .news-card h3 {
+      font-size: 21px;
+      margin-bottom: 12px;
+    }
+
+    .news-source {
+      margin-top: auto;
+      padding-top: 14px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.44);
+    }
+
+    #s24 h2 {
+      font-size: clamp(2.55rem, 3.45vw, 3.35rem);
+      line-height: 0.98;
+      max-width: 860px;
+      margin-bottom: 22px;
+    }
+
+    #s24 .news-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      max-width: 1180px;
+      width: 100%;
+    }
+
+    #s24 .news-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 0;
+      padding: 18px;
+      align-items: stretch;
+    }
+
+    #s24 .news-meta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #s24 .news-date {
+      margin-bottom: 0;
+    }
+
+    #s24 .news-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.52);
+    }
+
+    #s24 .news-body {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    #s24 .news-date {
+      font-size: 10px;
+      padding: 8px 10px;
+      letter-spacing: 0.10em;
+    }
+
+    #s24 .news-card h3 {
+      font-size: 19px;
+      line-height: 1.15;
+      margin-bottom: 5px;
+    }
+
+    #s24 .news-card p {
+      max-width: none;
+      font-size: 14px;
+      line-height: 1.36;
+    }
+
+    #s24 .news-foot {
+      margin-top: 10px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.44);
+    }
+
+    .qa-list {
+      list-style: none;
+      max-width: 880px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .qa-list li {
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      font-size: 18px;
+      line-height: 1.55;
+      color: rgba(228,226,216,0.84);
+    }
+
+    .cta-copy {
+      max-width: 840px;
+      font-size: clamp(1.9rem, 3.6vw, 3.3rem);
+      font-weight: 300;
+      letter-spacing: -0.04em;
+      line-height: 1.12;
+      color: rgba(228,226,216,0.82);
+    }
+
+    .cta-copy strong {
+      color: var(--cream);
+      font-weight: 400;
+    }
+
+    .cta-copy .orange {
+      color: var(--orange);
+      font-weight: 400;
+    }
+
+    .funnel-visual {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(90deg, rgba(17,17,17,0.98) 0%, rgba(17,17,17,0.94) 44%, rgba(17,17,17,0.78) 72%, rgba(17,17,17,0.44) 100%),
+        url('deck-assets/frame-110.png');
+      background-repeat: no-repeat;
+      background-size: auto 112%;
+      background-position: 115% center;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    #s26 .funnel-visual,
+    #s27 .funnel-visual {
+      opacity: 0.92;
+    }
+
+
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid rgba(228,226,216,0.14);
+      background: rgba(255,255,255,0.06);
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(228,226,216,0.8);
+      margin-bottom: 18px;
+    }
+
+    .t-cta {
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .t-cta h2 {
+      font-size: clamp(2.4rem, 4.4vw, 4.1rem);
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+      color: #ffffff;
+      max-width: 760px;
+      margin-bottom: 18px;
+      text-wrap: balance;
+      orphans: 2;
+      widows: 2;
+    }
+
+    .t-cta p {
+      max-width: 700px;
+      font-size: clamp(18px, 1.8vw, 22px);
+      line-height: 1.68;
+      font-weight: 400;
+      color: rgba(255,255,255,0.98);
+    }
+
+    .cta-split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 210px;
+      gap: 56px;
+      align-items: end;
+      width: 100%;
+      max-width: 1120px;
+    }
+
+    .cta-hero {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      max-width: 620px;
+    }
+
+    .cta-enti {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #111111;
+      text-decoration: none;
+      padding: 14px 20px;
+      border-radius: 3px;
+      background: #ffffff;
+      transition: background 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 2px 8px rgba(255,255,255,0.1);
+    }
+
+    .cta-enti:hover {
+      background: #f5f5f5;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255,255,255,0.15);
+    }
+
+    .cta-enti img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .cta-fallback {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      color: rgba(228,226,216,0.82);
+    }
+
+    .cta-fallback a {
+      color: var(--cream);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,82,51,0.28);
+      padding-bottom: 2px;
+    }
+
+    .cta-fallback a:hover {
+      color: var(--orange);
+      border-color: rgba(255,82,51,0.58);
+    }
+
+    .cta-side-qr {
+      justify-self: end;
+      width: 100%;
+      max-width: 210px;
+      margin-right: 12px;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,82,51,0.24);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .qr-kicker {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(180,180,180,0.58);
+      margin-bottom: 10px;
+    }
+
+    .qr-frame {
+      background: #ffffff;
+      padding: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .cta-side-qr .qr-frame {
+      padding: 8px;
+    }
+
+    .cta-side-qr .qr-frame img {
+      width: 148px;
+      height: 148px;
+    }
+
+    .soft-links {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+      margin-top: 28px;
+      max-width: 940px;
+    }
+
+    .soft-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 140px;
+      padding: 22px 24px;
+      border-radius: 8px;
+      border: 1px solid rgba(228,226,216,0.24);
+      background: rgba(255,255,255,0.1);
+      color: var(--cream);
+    }
+
+    .soft-card.large {
+      grid-row: span 2;
+      min-height: 294px;
+      background: linear-gradient(180deg, rgba(255,82,51,0.16) 0%, rgba(255,255,255,0.1) 100%);
+      border-color: rgba(255,82,51,0.36);
+    }
+
+    .soft-card strong {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    .soft-card span {
+      font-size: 15px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.98);
+    }
+
+    .soft-card .soft-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.82);
+    }
+
+    .soft-card-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,82,51,0.28);
+      background: rgba(255,82,51,0.08);
+      color: var(--cream);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .soft-card-action:hover {
+      background: rgba(255,82,51,0.14);
+      border-color: rgba(255,82,51,0.5);
+      color: #ffffff;
+    }
+
+    .soft-card .qr-frame img {
+      width: 176px;
+      height: 176px;
+    }
+
+    .soft-card.socials {
+      justify-content: flex-start;
+    }
+
+    .handle-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .handle-list a {
+      width: fit-content;
+      font-family: var(--mono);
+      font-size: 15px;
+      letter-spacing: 0.03em;
+      color: #ffffff;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .t-concept#s27 h2 {
+      color: #ffffff;
+      text-shadow: 0 1px 0 rgba(0,0,0,0.18);
+    }
+
+    #s26 .label,
+    #s26 .pill-badge,
+    #s26 .cta-fallback,
+    #s26 .cta-copy,
+    #s27 .label,
+    #s27 .soft-card span,
+    #s27 .soft-card .soft-meta,
+    #s27 .handle-list a {
+      color: rgba(255,255,255,0.94);
+    }
+
+    #s26 .cta-copy,
+    #s26 .t-cta p {
+      color: #ffffff;
+    }
+
+    #s27 .soft-card {
+      border-color: rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.12);
+    }
+
+    #s27 .soft-card.large {
+      background: linear-gradient(180deg, rgba(255,82,51,0.18) 0%, rgba(255,255,255,0.12) 100%);
+      border-color: rgba(255,82,51,0.42);
+    }
+
+    #s27 .soft-card strong {
+      color: rgba(255,146,118,0.96);
+    }
+
+    #s27 .soft-card span {
+      color: rgba(255,255,255,0.98);
+    }
+
+    #s27 .soft-card .soft-meta {
+      color: rgba(255,255,255,0.78);
+    }
+
+    .handle-list a:hover {
+      color: #ffffff;
+      border-color: rgba(228,226,216,0.42);
+    }
+
+    @media (max-width: 1200px) {
+      .slide {
+        padding-top: 72px;
+        padding-bottom: 72px;
+        overflow-y: auto;
+      }
+
+      .split-grid,
+      .demo-grid,
+      .visual-wrap,
+      .t-compare .cmp-wrap,
+      .three-up,
+      .two-up,
+      .t-news .news-grid,
+      .cta-split,
+      .soft-links {
+        grid-template-columns: 1fr;
+      }
+
+      .soft-card.large {
+        grid-row: auto;
+      }
+
+      .cta-side-qr {
+        justify-self: start;
+        margin-right: 0;
+      }
+
+      #s24 .news-card {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      #s24 .news-grid {
+        grid-template-columns: 1fr;
+      }
+
+      html, body { overflow: auto; }
+      #deck { position: relative; min-height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+<div id="progress"><div id="progress-fill"></div></div>
+<div id="counter">01 / 27</div>
+
+<div id="deck">
+  <section class="slide t-cover active" id="s1">
+    <img src="deck-assets/vista-mark-light.svg" alt="Vista mark" style="position:absolute;height:128vh;left:24%;top:-10vh;pointer-events:none;display:block;opacity:0.9;">
+    <div class="top-label">Arco x Vista</div>
+    <h1>Claude Cowork<br>y Claude Code</h1>
+    <p class="tagline">De chat a ejecuci&oacute;n: c&oacute;mo delegar trabajo real en escritorio y terminal sin perder criterio.</p>
+    <div class="vista-logo">Workshop &middot; 90 min &middot; en espa&ntilde;ol</div>
+  </section>
+
+  <section class="slide t-concept" id="s2">
+    <div class="label">Quienes somos</div>
+    <h2>Experiencia en tecnologia.<br><span class="muted">De estrategia a producto.</span></h2>
+
+    <div class="org-grid">
+      <div class="org-card">
+        <img src="deck-assets/arco-white.png" alt="Arco" class="org-logo">
+        <div class="org-desc">Estrategia y ejecucion go-to-market para proyectos web3 en Ibero-America.<br><span style="color:var(--cream);">El equipo detras de ETH Latam</span></div>
+      </div>
+      <div class="org-card">
+        <img src="deck-assets/vista-lockup-dark.svg" alt="Vista" class="org-logo">
+        <div class="org-desc">Investigacion aplicada y capacitacion en IA para equipos que quieren convertirla en trabajo real.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="slide t-concept" id="s3">
+    <div class="label">00 &middot; Mapa</div>
+    <h2>La IA ya no solo responde.<br><span class="muted">Tambi&eacute;n ejecuta.</span></h2>
+    <div class="story-copy">
+      <p>Hoy vamos de la conversaci&oacute;n al trabajo real.</p>
+    </div>
+    <ul style="max-width:780px">
+      <li><span class="arrow">&#8594;</span><span><strong>Chat vs Agent</strong><span class="dim"> del chat a la ejecuci&oacute;n</span></span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Agents 101</strong><span class="dim"> autonom&iacute;a, herramientas y persistencia</span></span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Seguridad en agentes</strong><span class="dim"> l&iacute;mites, permisos y prompt injection</span></span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Claude Cowork</strong><span class="dim"> archivos, documentos y escritorio</span></span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Claude Code</strong><span class="dim"> repos, tests y loop de trabajo</span></span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Updates</strong><span class="dim"> qu&eacute; cambi&oacute; y por qu&eacute; importa</span></span></li>
+    </ul>
+  </section>
+
+  <section class="slide t-concept" id="s4">
+    <div class="label">01 &middot; Chat vs Agent</div>
+    <h2>La narrativa del cambio</h2>
+    <div class="story-copy">
+      <p><strong>2023-2024:</strong> La IA era una ventana de chat. Le ped&iacute;as "analiza estos 50 PDFs", recib&iacute;as un p&aacute;rrafo explic&aacute;ndote lo que encontr&oacute;, y luego <strong>t&uacute;</strong> abr&iacute;as cada archivo, copiabas datos a Excel, formateabas. La IA opinaba; t&uacute; ejecutabas manualmente.</p>
+      <p><strong>2025-2026:</strong> La IA es un agente. Le pides lo mismo, pero ahora &eacute;l abre tus carpetas, lee los PDFs, crea el Excel con f&oacute;rmulas y gr&aacute;ficos, y lo guarda en tu escritorio listo para enviar. T&uacute; revisas el resultado; &eacute;l ejecut&oacute; el proceso.</p>
+    </div>
+    <div class="note">
+      <div class="note-label">La transici&oacute;n es de informaci&oacute;n a operaci&oacute;n</div>
+      <div class="note-body">En chat act&uacute;a como un consultor que te dice c&oacute;mo hacerlo. Un agente trabaja como un pasante usando tu m&aacute;quina mientras tomas caf&eacute;.</div>
+    </div>
+  </section>
+  <section class="slide t-compare" id="s5">
+    <div class="label">01 &middot; Chat vs Agent</div>
+    <h2>Dos maneras de trabajar</h2>
+    <div class="cmp-wrap">
+      <article class="cmp-col">
+        <div class="cmp-label">Modo consultor</div>
+        <div class="cmp-title">Chat</div>
+        <ul>
+          <li>Te explica el camino.</li>
+          <li>Devuelve contexto, no ejecuci&oacute;n.</li>
+          <li>Sirve para pensar, aprender o decidir.</li>
+          <li>El siguiente paso lo da una persona.</li>
+        </ul>
+        <div class="cmp-foot">Entrega principal: contexto</div>
+      </article>
+      <article class="cmp-col">
+        <div class="cmp-label">Modo operador</div>
+        <div class="cmp-title">Agente</div>
+        <ul>
+          <li>Recibe una meta y arma un plan.</li>
+          <li>Usa herramientas y produce cambios reales.</li>
+          <li>Pide permiso cuando el riesgo sube.</li>
+          <li>Sirve para delegar trabajo repetible.</li>
+        </ul>
+        <div class="cmp-foot">Entrega principal: trabajo terminado</div>
+      </article>
+    </div>
+  </section>
+
+  <section class="slide t-section" id="s6">
+    <div class="label">02 &middot; Agents 101</div>
+    <h2>Qu&eacute; convierte a algo en un agente<br><span class="muted">de verdad</span></h2>
+  </section>
+
+  <section class="slide t-concept" id="s7">
+    <div class="label">02 &middot; Agents 101</div>
+    <h2>Tres propiedades obligatorias.</h2>
+    <ul>
+      <li><span class="arrow">&#8594;</span><span><strong>Autonom&iacute;a:</strong> t&uacute; defines la meta; el agente arma y ejecuta el plan.</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Tool use:</strong> trabaja con archivos, apps o servicios. No solo con palabras.</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Persistencia:</strong> mantiene el hilo durante tareas largas y no se cae al archivo tres.</span></li>
+    </ul>
+    <div class="note">
+      <div class="note-label">Lectura simple</div>
+      <div class="note-body">Si no ejecuta, no usa herramientas o no sostiene contexto, seguimos hablando de chat avanzado.</div>
+    </div>
+  </section>
+
+  <section class="slide t-visual" id="s8">
+    <div class="label">02 &middot; Agents 101</div>
+    <h2>La IA cada vez aguanta m&aacute;s trabajo.</h2>
+    <div class="visual-wrap">
+      <div class="visual-main">
+        <img src="deck-assets/metr-llm-time-horizon.png" alt="Grafica de METR sobre horizonte de trabajo de modelos" />
+      </div>
+      <aside class="visual-side">
+        <div class="note-label">C&oacute;mo leerla</div>
+        <ul>
+          <li><strong>Casos de uso:</strong> te ayuda a ver cu&aacute;ndo basta con chat y cu&aacute;ndo ya conviene delegar.</li>
+          <li><strong>Expectativas:</strong> m&aacute;s horizonte no es magia; todav&iacute;a necesita pasos, chequeos y supervisi&oacute;n.</li>
+          <li><strong>Timing:</strong> explica por qu&eacute; flujos que fallaban antes hoy s&iacute; pueden servir.</li>
+          <li><strong>Riesgo:</strong> m&aacute;s capacidad tambi&eacute;n vuelve el error m&aacute;s caro.</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section class="slide t-compare" id="s9">
+    <div class="label">02 &middot; Agents 101</div>
+    <h2>Dos herramientas: <span class="orange">nativas</span> y <span class="orange">externas</span></h2>
+    <div class="cmp-wrap">
+      <article class="cmp-col">
+        <div class="cmp-label">Nativa / local</div>
+        <div class="cmp-title">Trabaja dentro de tu entorno.</div>
+        <ul>
+          <li>Lee, crea y modifica archivos.</li>
+          <li>Opera sobre carpetas que t&uacute; autorizas.</li>
+          <li>Viene dentro del producto.</li>
+        </ul>
+      </article>
+      <article class="cmp-col">
+        <div class="cmp-label">Externa / conectada</div>
+        <div class="cmp-title">Usa herramientas fuera de tu entorno.</div>
+        <ul>
+          <li>Puede llamar APIs, CLI tools o MCPs.</li>
+          <li>Le permite hablar con GitHub, Slack o Drive.</li>
+          <li>Ampl&iacute;a lo que puede hacer fuera de tu carpeta.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="slide t-concept" id="s10">
+    <div class="label">02 &middot; Skills</div>
+    <h2>Skills: un m&eacute;todo repetible,<br><span class="muted">empaquetado para que Claude lo repita bien.</span></h2>
+    <div class="story-copy">
+      <p>Un Skill es un paquete reutilizable de instrucciones, archivos y criterios para una tarea que se repite. Sirve para que Claude haga ese trabajo de la misma manera cada vez.</p>
+    </div>
+    <ul style="max-width:780px">
+      <li><span class="arrow">&#8594;</span><span><strong>Con <code>skill-creator</code>, que es un Skill para crear Skills,</strong><span class="dim"> conviertes ese proceso en uno nuevo sin arrancar de cero.</span></span></li>
+    </ul>
+    <div class="note">
+      <div class="note-label">Regla pr&aacute;ctica</div>
+      <div class="note-body">Si tu equipo repite el mismo formato, el mismo checklist o el mismo reporte, esa es la candidata perfecta para una Skill.</div>
+    </div>
+  </section>
+
+  <section class="slide t-section" id="s11">
+    <div class="label">03 &middot; Seguridad</div>
+    <h2>Antes de delegar trabajo<br><span class="muted">hay que entender l&iacute;mites</span></h2>
+  </section>
+
+  <section class="slide t-concept" id="s12">
+    <div class="label">03 &middot; Seguridad</div>
+    <h2>Seguridad: qu&eacute; puede hacer<br><span class="muted">y qu&eacute; todav&iacute;a no conviene soltarle</span></h2>
+    <ul>
+      <li><span class="arrow">&#8594;</span><span><strong>Todav&iacute;a est&aacute; en preview:</strong> sirve para probar y acelerar trabajo, no para procesos sensibles sin supervisi&oacute;n.</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Escritura real:</strong> puede cambiar archivos dentro de las carpetas que le abras.</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Datos sensibles:</strong> datos personales, credenciales y material regulado siguen fuera.</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Prompt injection:</strong> un PDF o una web pueden intentar desviar al agente.</span></li>
+    </ul>
+  </section>
+
+  <section class="slide t-concept" id="s13">
+    <div class="label">03 &middot; Seguridad</div>
+    <h2>Antes de continuar: tres controles.</h2>
+    <ul>
+      <li><span class="arrow">&#8594;</span><span><strong>Lee el plan de acci&oacute;n</strong> antes de continuar.</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Valida el scope:</strong> carpetas, webs y archivos que piensa tocar.</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Empieza en sandbox:</strong> primero carpeta de prueba, luego trabajo real.</span></li>
+    </ul>
+    <div class="note">
+      <div class="note-label">Regla de oro</div>
+      <div class="note-body">Si no lo publicar&iacute;as en p&uacute;blico, no lo pongas en un agente sin controles.</div>
+    </div>
+  </section>
+
+  <section class="slide t-section" id="s14">
+    <div class="label">04 &middot; Claude Cowork</div>
+    <h2>Claude Cowork<br><span class="muted">el agente de escritorio</span></h2>
+  </section>
+
+  <section class="slide t-concept" id="s15">
+    <div class="label">04 &middot; Claude Cowork</div>
+    <h2>Claude Cowork no es otro chat.<br><span class="muted">Trabaja dentro de tu escritorio.</span></h2>
+    <ul>
+      <li><span class="arrow">&#8594;</span><span>Recibe una meta, no una secuencia de mensajes.</span></li>
+      <li><span class="arrow">&#8594;</span><span>Opera sobre archivos y documentos reales.</span></li>
+      <li><span class="arrow">&#8594;</span><span>Pasa por aprobaciones cuando la acci&oacute;n tiene m&aacute;s impacto.</span></li>
+      <li><span class="arrow">&#8594;</span><span>Puede repartir trabajo grande entre subagentes.</span></li>
+    </ul>
+    <div class="note">
+      <div class="note-label">Arquitectura r&aacute;pida</div>
+      <div class="note-body">Recibe la meta, reparte trabajo cuando hace falta y te pide OK cuando el riesgo sube.</div>
+    </div>
+  </section>
+
+  <section class="slide t-concept" id="s16">
+    <div class="label">04 &middot; Claude Cowork</div>
+    <h2>Demo A: encontrar un Airbnb.</h2>
+    <div class="demo-grid">
+      <article class="demo-card">
+        <div class="card-kicker">Setup</div>
+        <h3>B&uacute;squeda en Palermo</h3>
+        <ul>
+          <li>2 personas, del viernes 10 al domingo 12 de abril.</li>
+          <li>Presupuesto total: $200-$300 USD.</li>
+          <li>Aire acondicionado, cama Queen o King y cerca del Subte.</li>
+        </ul>
+      </article>
+      <article class="demo-card">
+        <div class="card-kicker">Prompt</div>
+        <h3>C&oacute;mo decide</h3>
+        <div class="prompt-box"><strong>Prompt:</strong> Act&uacute;a como mi experto en Airbnb especializado en Buenos Aires. Usa el plugin de Claude en Chrome, filtra por precios m&aacute;s baratos y buenas rese&ntilde;as. Recomi&eacute;ndame la mejor opci&oacute;n &uacute;nica para Palermo y haz un an&aacute;lisis breve de pros y contras frente a las dem&aacute;s.</div>
+        <div class="bottom-line">Entregar: una sola ganadora con an&aacute;lisis breve</div>
+      </article>
+    </div>
+    <div class="note demo-context-note">
+      <div class="note-label">Contexto ficticio</div>
+      <div class="note-body">La b&uacute;squeda simula una decisi&oacute;n real de viaje: comparar opciones, filtrar restricciones y defender una &uacute;nica recomendaci&oacute;n.</div>
+    </div>
+  </section>
+
+  <section class="slide t-concept" id="s17">
+    <div class="label">04 &middot; Claude Cowork</div>
+    <h2>Demo B: ordenar Descargas.</h2>
+    <div class="demo-grid">
+      <article class="demo-card">
+        <div class="card-kicker">Setup</div>
+        <h3>Carpeta ca&oacute;tica</h3>
+        <ul>
+          <li>15 archivos mezclados entre facturas, im&aacute;genes y PDFs.</li>
+          <li>Nombres rotos tipo final_v2 y scan_001.</li>
+          <li>Cero convenci&oacute;n de orden operativo.</li>
+        </ul>
+      </article>
+      <article class="demo-card">
+        <div class="card-kicker">Prompt</div>
+        <h3>C&oacute;mo lo ordena</h3>
+        <div class="prompt-box"><strong>Prompt:</strong> Organiza esta carpeta ca&oacute;tica de 15 archivos. Renombra con un criterio consistente, crea un &iacute;ndice en Excel con nombre original, nuevo nombre y fecha, y deja una nota breve de qu&eacute; cambi&oacute;.</div>
+        <div class="bottom-line">Mostrar: renombres consistentes, &iacute;ndice y nota de cambio</div>
+      </article>
+    </div>
+    <div class="note demo-context-note">
+      <div class="note-label">Contexto ficticio</div>
+      <div class="note-body">Estas demos est&aacute;n basadas en Cosecha Urbana SRL, empresa ficticia del workshop. Fuente: workshop-2-demos/README.md.</div>
+    </div>
+  </section>
+
+  <section class="slide t-concept" id="s18">
+    <div class="label">04 &middot; Claude Cowork</div>
+    <h2>Demo C: s&iacute;ntesis de investigaci&oacute;n.</h2>
+    <div class="demo-grid">
+      <article class="demo-card">
+        <div class="card-kicker">Setup</div>
+        <h3>7 documentos de research</h3>
+        <ul>
+          <li>Hallazgos repartidos entre varios documentos.</li>
+          <li>Informaci&oacute;n cualitativa y datos comparables.</li>
+          <li>Necesidad de una lectura ejecutiva clara.</li>
+        </ul>
+      </article>
+      <article class="demo-card">
+        <div class="card-kicker">Prompt</div>
+        <h3>C&oacute;mo lo sintetiza</h3>
+        <div class="prompt-box"><strong>Prompt:</strong> Lee estos 7 documentos y genera un informe ejecutivo con resumen, hallazgos por documento y tabla comparativa.</div>
+        <div class="bottom-line">Mostrar: informe ejecutivo y tabla comparativa</div>
+      </article>
+    </div>
+    <div class="note demo-context-note">
+      <div class="note-label">Contexto ficticio</div>
+      <div class="note-body">Estas demos est&aacute;n basadas en Cosecha Urbana SRL, empresa ficticia del workshop. Fuente: workshop-2-demos/README.md.</div>
+    </div>
+  </section>
+
+  <section class="slide t-concept" id="s19">
+    <div class="label">04 &middot; Claude Cowork</div>
+    <h2>Demo D: tarea programada.</h2>
+    <div class="demo-grid">
+      <article class="demo-card">
+        <div class="card-kicker">Caso</div>
+        <h3>Trabajo recurrente</h3>
+        <ul>
+          <li>8 archivos de facturas pendientes.</li>
+          <li>El output es siempre parecido.</li>
+          <li>Lo valioso es que quede programado.</li>
+        </ul>
+      </article>
+      <article class="demo-card">
+        <div class="card-kicker">Prompt</div>
+        <h3>C&oacute;mo lo programa</h3>
+        <div class="prompt-box"><strong>Prompt:</strong> Cada lunes a las 9:00 a. m., revisa esta carpeta de 8 facturas pendientes y genera un resumen semanal para Contabilidad, con CSV de estado y regla de programaci&oacute;n.</div>
+        <div class="bottom-line">Mostrar: resumen semanal, CSV de estado y regla de scheduling</div>
+      </article>
+    </div>
+    <div class="note demo-context-note">
+      <div class="note-label">Contexto ficticio</div>
+      <div class="note-body">Estas demos est&aacute;n basadas en Cosecha Urbana SRL, empresa ficticia del workshop. Fuente: workshop-2-demos/README.md.</div>
+    </div>
+  </section>
+
+  <section class="slide t-section" id="s20">
+    <div class="label">05 &middot; Claude Code</div>
+    <h2>Claude Code<br><span class="muted">el agente de terminal</span></h2>
+  </section>
+
+  <section class="slide t-compare" id="s21">
+    <div class="label">05 &middot; Claude Code</div>
+    <h2>Cowork y Claude Code comparten la l&oacute;gica de agente,<br><span class="muted">pero no hacen el mismo trabajo.</span></h2>
+    <div class="cmp-wrap">
+      <article class="cmp-col">
+        <div class="cmp-label">Cowork</div>
+        <div class="cmp-title">Escritorio</div>
+        <ul>
+          <li>Documentos, carpetas y archivos de usuario.</li>
+          <li>Flujos de oficina y operaciones manuales.</li>
+          <li>Resultado visible dentro de la app.</li>
+        </ul>
+      </article>
+      <article class="cmp-col">
+        <div class="cmp-label">Claude Code</div>
+        <div class="cmp-title">Terminal</div>
+        <ul>
+          <li>Repositorios, builds, tests y scripts.</li>
+          <li>Trabajo t&eacute;cnico m&aacute;s profundo.</li>
+          <li>Resultado visible en el codebase y el loop.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="slide t-concept" id="s22">
+    <div class="label">05 &middot; Claude Code</div>
+    <h2>Claude Code sirve cuando el trabajo vive en un repo.<br><span class="muted">Inspecciona, cambia, prueba y corrige.</span></h2>
+    <ul>
+      <li><span class="arrow">&#8594;</span><span><strong>Agent teams:</strong> varias instancias trabajando en paralelo sin pisarse.</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>AutoMemory:</strong> recuerda convenciones del repo y del equipo.</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Loop build-test-fix:</strong> inspecciona, cambia, prueba y corrige.</span></li>
+      <li><span class="arrow">&#8594;</span><span><strong>Humano en el loop:</strong> el criterio sigue siendo tuyo.</span></li>
+    </ul>
+  </section>
+
+  <section class="slide t-concept" id="s23">
+    <div class="label">05 &middot; Claude Code</div>
+    <h2>Claude Code se entiende mejor con demos.<br><span class="muted">Crearemos una landing page minimalista.</span></h2>
+    <div class="one-up">
+      <article class="mini-card">
+        <div class="card-kicker">Demo Code</div>
+        <h3>Landing page minimal</h3>
+        <p>Una landing sobria y responsive, con CTA claro e interacci&oacute;n real que s&iacute; convierte.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="slide t-news" id="s24">
+    <div class="label">06 &middot; Updates</div>
+    <h2>Claude no para de sacar actualizaciones.</h2>
+    <div class="news-grid">
+      <article class="news-card">
+        <div class="news-meta">
+          <div class="news-date">17 feb 2026</div>
+          <div class="news-tag">Cowork + Code</div>
+        </div>
+        <div class="news-body">
+          <h3>Sonnet 4.6 aguanta tareas m&aacute;s largas.</h3>
+          <p>Mejora coding, planning y computer use. Adem&aacute;s abre la beta de 1M tokens para contextos enormes.</p>
+        </div>
+      </article>
+      <article class="news-card">
+        <div class="news-meta">
+          <div class="news-date">24 feb 2026</div>
+          <div class="news-tag">Cowork</div>
+        </div>
+        <div class="news-body">
+          <h3>Cowork ya se puede extender mejor.</h3>
+          <p>Plugins, connectors y skills quedan mejor organizados, con m&aacute;s control para equipos y admins.</p>
+        </div>
+      </article>
+      <article class="news-card">
+        <div class="news-meta">
+          <div class="news-date">25 feb 2026</div>
+          <div class="news-tag">Cowork</div>
+        </div>
+        <div class="news-body">
+          <h3>Cowork ya corre tareas programadas.</h3>
+          <p>Puedes dejarle un trabajo recurrente o lanzarlo on-demand sin rehacer el prompt cada vez.</p>
+        </div>
+      </article>
+      <article class="news-card">
+        <div class="news-meta">
+          <div class="news-date">17 mar 2026</div>
+          <div class="news-tag">Cowork</div>
+        </div>
+        <div class="news-body">
+          <h3>Cowork ya sigue el hilo desde el m&oacute;vil.</h3>
+          <p>Ves el mismo trabajo desde iPhone o Android mientras sigue corriendo en tu desktop.</p>
+        </div>
+      </article>
+      <article class="news-card">
+        <div class="news-meta">
+          <div class="news-date">23 mar 2026</div>
+          <div class="news-tag">Cowork + Code</div>
+        </div>
+        <div class="news-body">
+          <h3>Dispatch ya puede mover la compu por ti.</h3>
+          <p>Con computer use puede abrir archivos, usar herramientas y navegar la pantalla para avanzar tareas.</p>
+        </div>
+      </article>
+      <article class="news-card">
+        <div class="news-meta">
+          <div class="news-date">24 mar 2026</div>
+          <div class="news-tag">Code</div>
+        </div>
+        <div class="news-body">
+          <h3>Auto mode reduce el ida y vuelta.</h3>
+          <p>Aprueba acciones seguras solo y frena las riesgosas. As&iacute; delegas m&aacute;s sin soltar el control.</p>
+        </div>
+      </article>
+    </div>
+    <div class="news-foot">Fuentes oficiales: Anthropic release notes + Claude Code docs</div>
+  </section>
+
+  <section class="slide t-concept" id="s25">
+    <div class="label">07 &middot; Cierre</div>
+    <h2>Ahora sabes cu&aacute;ndo pasar de chat a agente.<br><span class="muted">Siempre con l&iacute;mites, permisos y revisi&oacute;n.</span></h2>
+  </section>
+
+  <section class="slide t-cta" id="s26">
+    <div class="funnel-visual"></div>
+    <div class="label">07 &middot; Cierre</div>
+    <div class="pill-badge">Briefing inicial &middot; 15 min</div>
+    <div class="cta-split">
+      <div>
+        <h2>Trae tu equipo.<br><span class="muted">Nosotros lo capacitamos.</span></h2>
+        <p style="color:#ffffff;">
+          Capacitamos equipos para usar IA con criterio, aterrizar casos de uso y convertir ideas en practicas reales.
+        </p>
+        <div class="cta-hero">
+          <a class="cta-enti" href="https://cal.com/isaac-vista/15min" target="_blank">
+            <img src="enti.png" alt="Enti">
+            <img src="lola.png" alt="Lola">
+            Agenda 15 min con Enti &amp; Lola
+          </a>
+          <div class="cta-fallback">Link directo: <a href="https://cal.com/isaac-vista/15min" target="_blank">cal.com/isaac-vista/15min</a></div>
+        </div>
+      </div>
+      <div class="cta-side-qr">
+        <div class="qr-kicker">QR acceso rapido</div>
+        <div class="qr-frame">
+          <img src="deck-assets/isaac-calendar-qr.png" alt="QR para agendar con Isaac">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide t-concept" id="s27">
+    <div class="funnel-visual"></div>
+    <div class="label">07 &middot; Cierre</div>
+    <h2 style="max-width:900px">Sigamos en contacto</h2>
+    <div class="soft-links">
+      <div class="soft-card large">
+        <strong>Comunidad</strong>
+        <span>Unete al grupo de WhatsApp para seguir compartiendo recursos, preguntas y anuncios despues del workshop.</span>
+        <div class="qr-frame">
+          <img src="deck-assets/whatsapp-community-qr.png" alt="QR para unirse a la comunidad de WhatsApp">
+        </div>
+        <a class="soft-card-action" href="https://chat.whatsapp.com/lIMIpXfesUQJgLoOcOoJCR?mode=gi_t" target="_blank" rel="noopener noreferrer">Entrar al grupo</a>
+        <div class="soft-meta">WhatsApp &middot; espanol &middot; acceso rapido</div>
+      </div>
+      <div class="soft-card">
+        <strong>Emergent Stack</strong>
+        <span>Nuestro newsletter de tecnologia e IA, escrito en ingles.</span>
+        <a class="soft-card-action" href="https://ethlatam.substack.com/" target="_blank" rel="noopener noreferrer">Abrir newsletter</a>
+        <div class="soft-meta">Newsletter &middot; in English</div>
+      </div>
+      <div class="soft-card socials">
+        <strong>Socials</strong>
+        <span>Sigue a Vista y Arco en X para recursos, noticias y proximos eventos.</span>
+        <div class="handle-list">
+          <a href="https://x.com/vistawtf" target="_blank" rel="noopener noreferrer">@vistawtf</a>
+          <a href="https://x.com/arco_lat" target="_blank" rel="noopener noreferrer">@arco_lat</a>
+        </div>
+        <div class="soft-meta">X &middot; updates &middot; comunidad</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  const N = 27;
+  let cur = 1;
+
+  function go(n) {
+    if (n < 1 || n > N) return;
+    document.getElementById('s' + cur).classList.remove('active');
+    cur = n;
+    document.getElementById('s' + cur).classList.add('active');
+    document.getElementById('progress-fill').style.width = (cur / N * 100) + '%';
+    const p = (x) => String(x).padStart(2, '0');
+    document.getElementById('counter').textContent = p(cur) + ' / ' + p(N);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    const fwd = ['ArrowRight', ' ', 'ArrowDown', 'PageDown'];
+    const bwd = ['ArrowLeft', 'Backspace', 'ArrowUp', 'PageUp'];
+    if (fwd.includes(e.key)) {
+      e.preventDefault();
+      go(cur + 1);
+    } else if (bwd.includes(e.key)) {
+      e.preventDefault();
+      go(cur - 1);
+    } else if (e.key === 'Home') {
+      go(1);
+    } else if (e.key === 'End') {
+      go(N);
+    }
+  });
+
+  go(1);
+</script>
+</body>
+</html>
+
